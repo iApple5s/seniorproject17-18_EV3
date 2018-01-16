@@ -74,9 +74,10 @@ public class LegoCodeGen extends Application {
         stage.setTitle("Lego Mindstorm Code Generator");
         
         //These JavaFX objects are the UI elements that populate the stage
-        TextField txtTrackWidth, txtWheelDiameter, txtOutput;
+        TextField txtTrackWidth, txtWheelDiameter, txtOutput, txtBotIPAddress;
         Label lblWheelDiameter, lblTrackWidth, lblTouchSensor, lblLeftMotor, lblRightMotor,
-               lblSoundSensor, lblUltrasonicSensor, lblLightSensor, lblMotorPower, lblOutput;
+               lblSoundSensor, lblUltrasonicSensor, lblLightSensor, lblMotorPower, lblOutput,
+               lblBotIPAddress;
         Button btnSaveSettings, btnLoadSettings, btnZoomIn, btnZoomOut, btnDownloadCode;
         ComboBox cboLeftMotor, cboRightMotor, cboTouchSensor, cboUltrasonicSensor, cboSoundSensor, cboLightSensor, cboMotorPower;
 
@@ -130,7 +131,11 @@ public class LegoCodeGen extends Application {
         lblMotorPower = new Label("Motor Power");
         cboMotorPower = new ComboBox();
         cboMotorPower.getItems().addAll ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
-        cboMotorPower.setValue("3");        
+        cboMotorPower.setValue("3");
+
+  lblBotIPAddress = new Label("Bot IP address");
+  txtBotIPAddress = new TextField();
+  txtBotIPAddress.setText("Check robot");
 
         //This button generates a nxc code based on the current state of the JavaFX ui elements and the blockly workspace
         btnDownloadCode = new Button ("Download code");
@@ -281,11 +286,13 @@ public class LegoCodeGen extends Application {
         gridPane.add (lblOutput,           1, 9,  1, 1);
         gridPane.add (txtOutput,           2, 9,  1, 1);
         gridPane.add (btnSaveSettings,     1, 10, 1, 1);
-        gridPane.add (btnLoadSettings,     2, 10, 1, 1);                 
-        gridPane.add (spacer,              1, 11, 2, 1);   
-        gridPane.add (btnZoomIn,           1, 12, 1, 1);
-        gridPane.add (btnZoomOut,          2, 12, 1, 1);                                                  
-        gridPane.add (btnDownloadCode,     1, 13, 2, 1);      
+        gridPane.add (btnLoadSettings,     2, 10, 1, 1);
+  gridPane.add (lblBotIPAddress,     1, 11, 1, 1);
+  gridPane.add (txtBotIPAddress,     2, 11, 1, 1);
+        gridPane.add (spacer,              1, 12, 2, 1);   
+        gridPane.add (btnZoomIn,           1, 13, 1, 1);
+        gridPane.add (btnZoomOut,          2, 13, 1, 1);                                                  
+        gridPane.add (btnDownloadCode,     1, 14, 2, 1);      
         
         Scene scene = new Scene(gridPane, 1024, 600);
         stage.setScene(scene);
@@ -735,7 +742,7 @@ public class LegoCodeGen extends Application {
              bw.newLine();
            }
          
-           bw.write("}");    	//print out the nxc footer stuff to file
+           bw.write("}");     //print out the nxc footer stuff to file
         
            bw.close();
         } 
