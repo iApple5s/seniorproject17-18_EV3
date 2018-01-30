@@ -98,4 +98,32 @@ Blockly.Blocks['sound_sensor'] = {
   }
 };
 
+Blockly.Blocks['speech'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Robot says:")
+        .appendField(new Blockly.FieldTextInput(""), "speech");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(230);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['led'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("LED  Turn")
+        .appendField(new Blockly.FieldDropdown([["left","LEFT"], ["right","RIGHT"], ["both","BOTH"]]), "side")
+        .appendField("LED")
+        .appendField(new Blockly.FieldDropdown([["Red","RED"], ["Green","GREEN"], ["Yellow","YELLOW"], ["Orange","ORANGE"], ["Amber","AMBER"], ["Off","OFF"]]), "color");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(230);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
                             

@@ -60,4 +60,17 @@ Blockly.JavaScript['sound_sensor'] = function(block) {
   return code;
 };
 
+Blockly.JavaScript['led'] = function(block) {
+  var dropdown_side = block.getFieldValue('side');
+  var dropdown_color = block.getFieldValue('color');
+  
+  var code = 'led_'+dropdown_side+'!'+dropdown_color+'\n';
+  return code;
+};
 
+Blockly.JavaScript['speech'] = function(block) {
+  var text_speech = block.getFieldValue('speech');
+  
+  var code = 'Sound.speak('+text_speech+')\n';
+  return code;
+};
