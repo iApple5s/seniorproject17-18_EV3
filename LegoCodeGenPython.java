@@ -479,7 +479,11 @@ public class LegoCodeGenPython extends Application {
                 		return false;
                 	}
                 	// Unit conversion tree
-                	if(tempStrNum.contains("in"
+                	if(tempStrNum[0].contains("in")){
+                		
+                	} else if(tempStrNum[0].contains("ft")){
+                		
+                	}
                 }
                 	
                 if (splitString[i].contains("move_forward_in"))
