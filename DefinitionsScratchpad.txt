@@ -1,0 +1,6 @@
+Definitions cheatsheet
+
+String MotorImport1 = "motorL = LargeMotor('out"+leftMotor+"')";
+String MotorImport2 = "motorR = LargeMotor('out"+rightMotor+"')";
+String AuxMotor1
+String AuxMotor2

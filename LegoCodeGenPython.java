@@ -86,7 +86,7 @@ public class LegoCodeGenPython extends Application {
         GridPane gridPane = new GridPane();
         
         ObservableList<String> motorOptions = FXCollections.observableArrayList ("Not Used", "A", "B", "C", "D");
-        ObservableList<String> inputPortOptions = FXCollections.observableArrayList ( "Not used", "1", "2", "3", "4");
+        ObservableList<String> inputPortOptions = FXCollections.observableArrayList ( "Not used", "1", "2", "3", "4");	
         
         //Create JavaFX UI objects.
         lblTrackWidth = new Label("Track Width");
@@ -416,7 +416,8 @@ public class LegoCodeGenPython extends Application {
     	* String trackWid     This is the string value of the track width diameter text box
     	* String motorPower   This is the string value of the motor power drop down
     	* String output       This is the string value of the output file name text box
-    	* String 
+    	* String AuxMotor1	  This is the string value of the Aux Motor 1 drop down
+    	* String AuxMotor2    This is the string value of the Aux Motor 2 drop down
     	* ---Outputs---
     	* boolean the reason this is not a void function is because there are cases where I have to return out of the function early to avoid errors
     	*/      
@@ -431,13 +432,15 @@ public class LegoCodeGenPython extends Application {
         String ImportLine2 = "from time   import sleep";
         result[1] = ImportLine1;
         result[2] = ImportLine2;
-        r= r + 3;
+        r = r + 3;
         // Motor and other variable declaration
         //Primary and Auxilary motors
         String MotorImport1 = "motorL = LargeMotor('out"+leftMotor+"')";
         String MotorImport2 = "motorR = LargeMotor('out"+rightMotor+"')";
-        //if(
-        //String AuxMotor1 = ""
+        result[r] = MotorImport1; r++;
+        result[r] = MotorImport2; r++;        
+        if(AuxMotor1.contains("Not Used")){} else {result[r] = "AuxMotor1 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
+        if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
         
         int motorPowerInt = Integer.parseInt(motorPower) * 10;
         
@@ -460,6 +463,8 @@ public class LegoCodeGenPython extends Application {
         
         //This loop goes through the generated array of strings from the .split() function 
         //and then looks at each index to figure out which block of code to generate
+        
+        int tabs = 0; //used for generating tabs when indentation is needed
         for (int i = 0; i < splitString.length; i ++)
         { 
         	if (splitString[i]=="NULL" || splitString[i]=="" || splitString[i]==" "|| splitString[i]=="EOF")
@@ -468,10 +473,11 @@ public class LegoCodeGenPython extends Application {
             }
             else
             {
-            	if (spiltString[i].contains("move_forward")){
+            	if (splitString[i].contains("move")){
             		String[] tempStrNum = splitString[i].split("!");
                 	String trimTempStrNum = tempStrNum[1].trim();
                 	double distance = 0.0;
+                	String direction = null;
                 	try {
                 		distance = Double.parseDouble(trimTempStrNum);
                 	} catch (Exception e){
@@ -480,12 +486,20 @@ public class LegoCodeGenPython extends Application {
                 	}
                 	// Unit conversion tree
                 	if(tempStrNum[0].contains("in")){
-                		
+                		distance = Double.parseDouble(trimTempStrNum);
                 	} else if(tempStrNum[0].contains("ft")){
-                		
-                	}
-                }
+                		distance = Double.parseDouble(trimTempStrNum) * 12;
+                	} 
                 	
+                	// Forwards or backwards
+                	if (tempStrNum[0].contains("backward")){
+                		direction = "-";
+                	} else { // assumes that the movement is forward
+                		direction = "+";
+                	}
+                	String PythonCode = tabs +"
+                }
+                /*	
                 if (splitString[i].contains("move_forward_in"))
                 {      
                 	//'move_'+dir+'_'+type+'!'+dist+'\n'
@@ -560,7 +574,8 @@ public class LegoCodeGenPython extends Application {
                 	String PythonCode="RotateMotor(OUT_"+leftMotor+rightMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
                 	result[r] = PythonCode;
                 	r++;
-                }      
+                }  
+                */
                 else if (splitString[i].contains("turn_left"))
                 {    
                 	String[] tempStrNum = splitString[i].split("!");
@@ -787,20 +802,14 @@ public class LegoCodeGenPython extends Application {
         try
         {
         	//create new output .nxc file -- add necessary elements not added in the first for loop
-        	File fout = new File(output+".nxc");
+        	File fout = new File(output+".py");
         	FileOutputStream fos = new FileOutputStream(fout);
-        	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        	bw.write("task main () {"); //print out the nxc header stuff to file
-        	bw.newLine();
-        	
+        	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));        	
         	for (int z = 0; z < r; z++)
         	{
         		bw.write(result[z]); //print out the result array to file
         		bw.newLine();
         	}
-        	
-        	bw.write("}");     //print out the nxc footer stuff to file
-        	
         	bw.close();
         } 
         catch (IOException e)
@@ -808,7 +817,7 @@ public class LegoCodeGenPython extends Application {
         	JOptionPane.showMessageDialog (null, "Problem writing to the file");
         }
         //at this point everything will have been sent to the file, and it should be able to be compiled
-        set_compile(output);
+        set_compile(output, IPAddress);
         return true;
     }
     
@@ -827,9 +836,9 @@ public class LegoCodeGenPython extends Application {
     	return Math.round(degrees);
     }
     
-    public void set_compile(String output) {
+    public void set_compile(String output, String IPAddress) {
     	/**
-    	* set_compile takes the generated .nxc output file from parser() and passes it to the Bricx Command Center for compilation
+    	* set_compile takes the generated .py output file from parser() and passes it to the Bricx Command Center for compilation
     	*
     	* ---Inputs---
     	* String output this string holds the name of the output file generated by parser()
@@ -837,7 +846,8 @@ public class LegoCodeGenPython extends Application {
     	* Void
     	*/
     	//Create command line string
-    	String CMD = "cmd.exe /c nbc -Susb -d "+output+".nxc -nbc=nbc_assembly.out -E=errors.txt > CompileStatus.out";
+    	//String CMD = "cmd.exe /c nbc -Susb -d "+output+".nxc -nbc=nbc_assembly.out -E=errors.txt > CompileStatus.out";
+    	String CMD = "cmd.exe /c plink -ssh "+IPAddress+" -l robot -pw maker";
     	try {
     		//Runtime object to hold Runtime execution
     		Runtime rt = Runtime.getRuntime();
