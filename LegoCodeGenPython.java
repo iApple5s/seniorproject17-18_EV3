@@ -16,6 +16,7 @@ import java.lang.String;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collections;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener.Change;
@@ -429,7 +430,7 @@ public class LegoCodeGenPython extends Application {
         // Adds #!/usr/bin/env python3 to start of file, needed in all files for executing in linux
         // basic import statements
         String ImportLine1 = "from ev3dev.ev3 import *";
-        String ImportLine2 = "from time   import sleep";
+        String ImportLine2 = "from time import sleep";
         result[1] = ImportLine1;
         result[2] = ImportLine2;
         r = r + 3;
@@ -442,7 +443,7 @@ public class LegoCodeGenPython extends Application {
         if(AuxMotor1.contains("Not Used")){} else {result[r] = "AuxMotor1 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
         if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
         
-        int motorPowerInt = Integer.parseInt(motorPower) * 10;
+        int motorPowerInt = Integer.parseInt(motorPower) * 100;
         
         double wheelCircum = 0.0;
         double turnCircum = 0.0;
@@ -464,9 +465,11 @@ public class LegoCodeGenPython extends Application {
         //This loop goes through the generated array of strings from the .split() function 
         //and then looks at each index to figure out which block of code to generate
         
-        int tabs = 0; //used for generating tabs when indentation is needed
+        int tCount = 0; //used for generating tabs when indentation is needed
+        
         for (int i = 0; i < splitString.length; i ++)
         { 
+        	String tabs = String.join("", Collections.nCopies(tCount,"\t"));
         	if (splitString[i]=="NULL" || splitString[i]=="" || splitString[i]==" "|| splitString[i]=="EOF")
         	{
                 break;
@@ -497,7 +500,17 @@ public class LegoCodeGenPython extends Application {
                 	} else { // assumes that the movement is forward
                 		direction = "+";
                 	}
-                	String PythonCode = tabs +"
+                	long revDeg = revolutionsDeg(wheelCircum,distance);
+                	String PythonCode = tabs +"motorL.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')";
+                	result[r] = PythonCode; r++;
+                	PythonCode = tabs+"motorR.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')";
+                	result[r] = PythonCode; r++;
+                	PythonCode = tabs+"motorR.wait_while('running')";
+                	result[r] = PythonCode; r++;
+                }
+                if (splitString[i].contains("Sound.speak")){
+                	String PythonCode = splitString[i];
+                	result[r] = PythonCode; r++;
                 }
                 /*	
                 if (splitString[i].contains("move_forward_in"))
@@ -801,7 +814,7 @@ public class LegoCodeGenPython extends Application {
         }
         try
         {
-        	//create new output .nxc file -- add necessary elements not added in the first for loop
+        	//create new output .py file -- add necessary elements not added in the first for loop
         	File fout = new File(output+".py");
         	FileOutputStream fos = new FileOutputStream(fout);
         	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));        	
