@@ -70,6 +70,6 @@ Blockly.JavaScript['led'] = function(block) {
 
 Blockly.JavaScript['speech'] = function(block) {
   var text_speech = block.getFieldValue('speech');
-  var code = 'Sound.speak('+text_speech+')\n';
+  var code = 'Sound.speak_'+text_speech+'\n';
   return code;
 };

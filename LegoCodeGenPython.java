@@ -509,7 +509,10 @@ public class LegoCodeGenPython extends Application {
                 	result[r] = PythonCode; r++;
                 }
                 if (splitString[i].contains("Sound.speak")){
-                	String PythonCode = splitString[i];
+                	String[] tempStr = splitString[i].split("_");
+                	
+                	String PythonCode = "Sound.speak(\""+tempStr[1]+"\")";
+
                 	result[r] = PythonCode; r++;
                 }
                 /*	
