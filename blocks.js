@@ -141,13 +141,77 @@ Blockly.Blocks['global_declare'] = {
 };
 
 Blockly.Blocks['string'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput("Text"), "textIn");
+        this.setOutput(true, "String");
+        this.setColour(230);
+        this.setTooltip("Text input");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['number'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField(new Blockly.FieldNumber(0), "numberIn");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['boolean'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([["True","TRUE"], ["False","FALSE"]]), "booleanDrop");
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("Text input");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['arithmeticop'] = {
   init: function() {
+    this.appendValueInput("val1")
+        .setCheck(null);
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("string"), "STRING");
-    this.setOutput(true, "String");
+        .appendField(new Blockly.FieldDropdown([["+","add"], ["-","subtract"], ["*","multiply"], ["/","divide"]]), "operation");
+    this.appendValueInput("val2")
+        .setCheck(null);
+    this.setOutput(true, null);
     this.setColour(230);
- this.setTooltip("String input");
+ this.setTooltip("Arithmetic operations");
  this.setHelpUrl("");
   }
 };
-Generator stu
+Blockly.Blocks['compare'] = {
+  init: function() {
+    this.appendValueInput("val1")
+        .setCheck(null);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([["==","equal"], ["!=","notEqual"], ["<","lessThan"], [">","greaterThan"], ["<=","lessOrEqual"], [">=","greaterOrEqual"]]), "compareType");
+    this.appendValueInput("val2")
+        .setCheck(null);
+    this.setOutput(true, "Boolean");
+    this.setColour(230);
+ this.setTooltip("Compare, outputs true/false value");
+ this.setHelpUrl("");
+  }
+};
+Blockly.Blocks['if_statement'] = {
+  init: function() {
+    this.appendValueInput("trigger")
+        .setCheck("Boolean")
+        .appendField("If:");
+    this.appendStatementInput("code")
+        .setCheck(null);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(230);
+ this.setTooltip("If statement, code runs if statement is true");
+ this.setHelpUrl("");
+  }
+};
