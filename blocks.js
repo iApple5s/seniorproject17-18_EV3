@@ -216,3 +216,19 @@ Blockly.Blocks['if_statement'] = {
         this.setHelpUrl("");
     }
 };
+
+//If conditions 
+
+//Checking what collor is being seen block
+Blockly.Blocks['color_is_seen'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("the color is:")
+        .appendField(new Blockly.FieldDropdown([["No Color","NOCOLOR"], ["Black","BLACK"], ["Blue","BLUE"], ["Green","GREEN"],["Yellow","YELLOW"],
+            ["Red","RED"],["White","WHITE"], ["Brown","BROWN"]]), "color");
+    this.setOutput(true, "Boolean");
+    this.setColour(230);
+ this.setTooltip("Compare color seen to wanted value");
+ this.setHelpUrl("");
+  }
+};

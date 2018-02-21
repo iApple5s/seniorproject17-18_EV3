@@ -60,6 +60,7 @@ Blockly.JavaScript['sound_sensor'] = function(block) {
 	return code;
 };
 
+
 Blockly.JavaScript['led'] = function(block) {
 	var dropdown_side = block.getFieldValue('side');
 	var dropdown_color = block.getFieldValue('color');
@@ -122,5 +123,14 @@ Blockly.JavaScript['if_statement'] = function(block) {
   var statements_code = Blockly.JavaScript.statementToCode(block, 'code');
   // TODO: Assemble JavaScript into code variable.
   var code = 'ifStatement_'+statements_code+'|'; // | is the char signifying a decrement in tab counter
+  return code;
+};
+
+//If statement conditions
+
+//What color is being seen block
+Blockly.JavaScript['color_is_seen'] = function(block) {
+  var dropdown_color = block.getFieldValue('color');
+  var code = dropdown_color;
   return code;
 };

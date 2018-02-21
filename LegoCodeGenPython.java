@@ -77,11 +77,11 @@ public class LegoCodeGenPython extends Application {
         //These JavaFX objects are the UI elements that populate the stage
         TextField txtTrackWidth, txtWheelDiameter, txtOutput, txtBotIPAddress;
         Label lblWheelDiameter, lblTrackWidth, lblTouchSensor, lblLeftMotor, lblRightMotor,
-        lblSoundSensor, lblUltrasonicSensor, lblLightSensor, lblMotorPower, lblOutput,
+        lblSoundSensor, lblColorSensor, lblUltrasonicSensor, lblLightSensor, lblMotorPower, lblOutput,
         lblBotIPAddress, lblAuxMotor1, lblAuxMotor2;
         Button btnSaveSettings, btnLoadSettings, btnZoomIn, btnZoomOut, btnDownloadCode;
         ComboBox cboLeftMotor, cboRightMotor, cboTouchSensor, cboUltrasonicSensor, 
-        cboSoundSensor, cboLightSensor, cboMotorPower, cboAuxMotor1, cboAuxMotor2;
+        cboSoundSensor, cboLightSensor, cboColorSensor, cboMotorPower, cboAuxMotor1, cboAuxMotor2;
         
         //This gridPane is the grid that holds all the JavaFX objects in place when the UI is resized
         GridPane gridPane = new GridPane();
@@ -139,7 +139,12 @@ public class LegoCodeGenPython extends Application {
         cboLightSensor = new ComboBox();
         cboLightSensor.getItems().addAll ("Not used", "1", "2", "3", "4");
         cboLightSensor.setValue("Not used");
-        
+
+        lblColorSensor = new Label("Color Sensor");
+        cboColorSensor = new ComboBox();
+        cboColorSensor.getItems().addAll("Not used", "1", "2", "3", "4");
+        cboColorSensor.setValue("Not used");
+
         lblMotorPower = new Label("Motor Power");
         cboMotorPower = new ComboBox();
         cboMotorPower.getItems().addAll ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
@@ -155,10 +160,11 @@ public class LegoCodeGenPython extends Application {
         		String code = (String) webEngine.executeScript("getCode()");
         		
         		//String code = (String) webEngine.executeScript("getCode()");
-        		String touch_sen, light_sen, sound_sen, ultrasonic_sen, leftMotor, rightMotor, AuxMotor1, AuxMotor2, wheelDiam, trackWid, motorPower, IPAddress, output;              
+        		String touch_sen, light_sen, sound_sen, color_sen, ultrasonic_sen, leftMotor, rightMotor, AuxMotor1, AuxMotor2, wheelDiam, trackWid, motorPower, IPAddress, output;              
         		touch_sen = cboTouchSensor.getValue().toString();
         		light_sen = cboLightSensor.getValue().toString();
         		sound_sen = cboSoundSensor.getValue().toString();
+                color_sen = cboColorSensor.getValue().toString();
         		ultrasonic_sen = cboUltrasonicSensor.getValue().toString();
         		leftMotor = cboLeftMotor.getValue().toString();
         		rightMotor = cboRightMotor.getValue().toString();
@@ -187,10 +193,11 @@ public class LegoCodeGenPython extends Application {
         btnSaveSettings = new Button ("Save Settings");
         btnSaveSettings.setOnAction((ActionEvent t) -> {
         		//save the current state of the UI elements
-        		String touch_sen, light_sen, sound_sen, ultrasonic_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower;   
+        		String touch_sen, light_sen, sound_sen, color_sen, ultrasonic_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower;   
         		touch_sen = cboTouchSensor.getValue().toString();
         		light_sen = cboLightSensor.getValue().toString();
         		sound_sen = cboSoundSensor.getValue().toString();
+                color_sen = cboColorSensor.getValue().toString();
         		ultrasonic_sen = cboUltrasonicSensor.getValue().toString();
         		leftMotor = cboLeftMotor.getValue().toString();
         		rightMotor = cboRightMotor.getValue().toString();
@@ -199,7 +206,7 @@ public class LegoCodeGenPython extends Application {
         		trackWid = txtTrackWidth.getText();   
         		
         		//create the String to be saved to disk sent to the function SaveFile()
-        		final String save_Settings = trackWid+","+wheelDiam+","+leftMotor+","+rightMotor+","+touch_sen+","+ultrasonic_sen+","+sound_sen+","+light_sen+","+motorPower+"\n";
+        		final String save_Settings = trackWid+","+wheelDiam+","+leftMotor+","+rightMotor+","+touch_sen+","+ultrasonic_sen+","+sound_sen+","+light_sen+","+color_sen+","+motorPower+"\n";
         		Text textSong = TextBuilder.create()
                 .text(save_Settings)
                 .build(); 
@@ -243,8 +250,9 @@ public class LegoCodeGenPython extends Application {
                         cboTouchSensor.setValue(splitSettingString[4]);     
                         cboUltrasonicSensor.setValue(splitSettingString[5]);     
                         cboSoundSensor.setValue(splitSettingString[6]);     
-                        cboLightSensor.setValue(splitSettingString[7]);     
-                        cboMotorPower.setValue(splitSettingString[8]);
+                        cboLightSensor.setValue(splitSettingString[7]); 
+                        cboColorSensor.setValue(splitSettingString[8]);    
+                        cboMotorPower.setValue(splitSettingString[9]);
                     }
                     catch (Exception e) {
                         //something didnt work
@@ -302,18 +310,20 @@ public class LegoCodeGenPython extends Application {
         gridPane.add (cboSoundSensor,      2, 8,  1, 1);         
         gridPane.add (lblLightSensor,      1, 9,  1, 1);
         gridPane.add (cboLightSensor,      2, 9,  1, 1);
-        gridPane.add (lblMotorPower,       1, 10, 1, 1);
-        gridPane.add (cboMotorPower,       2, 10, 1, 1); 
-        gridPane.add (lblOutput,           1, 11, 1, 1);
-        gridPane.add (txtOutput,           2, 11, 1, 1);
-        gridPane.add (btnSaveSettings,     1, 12, 1, 1);
-        gridPane.add (btnLoadSettings,     2, 12, 1, 1);
-        gridPane.add (lblBotIPAddress,     1, 13, 1, 1);
-  		gridPane.add (txtBotIPAddress,     2, 13, 1, 1);
-        gridPane.add (spacer,              1, 14, 2, 1);   
-        gridPane.add (btnZoomIn,           1, 15, 1, 1);
-        gridPane.add (btnZoomOut,          2, 15, 1, 1);                                                  
-        gridPane.add (btnDownloadCode,     1, 16, 2, 1);      
+        gridPane.add (lblColorSensor,      1, 10,  1, 1);
+        gridPane.add (cboColorSensor,      2, 10,  1, 1);
+        gridPane.add (lblMotorPower,       1, 11, 1, 1);
+        gridPane.add (cboMotorPower,       2, 11, 1, 1); 
+        gridPane.add (lblOutput,           1, 12, 1, 1);
+        gridPane.add (txtOutput,           2, 12, 1, 1);
+        gridPane.add (btnSaveSettings,     1, 13, 1, 1);
+        gridPane.add (btnLoadSettings,     2, 13, 1, 1);
+        gridPane.add (lblBotIPAddress,     1, 14, 1, 1);
+  		gridPane.add (txtBotIPAddress,     2, 14, 1, 1);
+        gridPane.add (spacer,              1, 15, 2, 1);   
+        gridPane.add (btnZoomIn,           1, 16, 1, 1);
+        gridPane.add (btnZoomOut,          2, 16, 1, 1);                                                  
+        gridPane.add (btnDownloadCode,     1, 17, 2, 1);      
         
         Scene scene = new Scene(gridPane, 1200, 600);
         stage.setScene(scene);
@@ -400,7 +410,7 @@ public class LegoCodeGenPython extends Application {
         return stringBuffer.toString();
     }
     
-    public boolean parser(String splitMe, String touch_sen, String light_sen, String sound_sen, String distance_sen, String leftMotor, String rightMotor, String wheelDiam, String trackWid, String motorPower, String output, String AuxMotor1, String AuxMotor2, String IPAddress) {
+    public boolean parser(String splitMe, String touch_sen, String light_sen, String sound_sen, String color_sen, String distance_sen, String leftMotor, String rightMotor, String wheelDiam, String trackWid, String motorPower, String output, String AuxMotor1, String AuxMotor2, String IPAddress) {
     	/**
     	* parser takes the current state of the blockly workspace and values from the UI to generate syntactically correct nxc code 
     	* for the robot to execute
@@ -441,8 +451,11 @@ public class LegoCodeGenPython extends Application {
         result[r] = MotorImport1; r++;
         result[r] = MotorImport2; r++;        
         if(AuxMotor1.contains("Not Used")){} else {result[r] = "AuxMotor1 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
-        if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
-        
+        if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor2+"')"; r++;} 
+        String ColorSensor = "cl = ColorSensor()";
+        result[r] = ColorSensor; r++;
+        if(ColorSensor.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
+
         int motorPowerInt = Integer.parseInt(motorPower) * 100;
         
         double wheelCircum = 0.0;
@@ -515,83 +528,6 @@ public class LegoCodeGenPython extends Application {
 
                 	result[r] = PythonCode; r++;
                 }
-                /*	
-                if (splitString[i].contains("move_forward_in"))
-                {      
-                	//'move_'+dir+'_'+type+'!'+dist+'\n'
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double distance = 0.0;
-                	try {
-                		distance = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
-                		return false;
-                	}
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="
-                	String PythonCode="RotateMotor(OUT_"+leftMotor+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	//RotateMotor(OUT_
-                	result[r] = PythonCode;
-                	r++;
-                }
-                else if (splitString[i].contains("move_forward_ft"))
-                {    
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double distance = 0.0;
-                	try {
-                		distance = Double.parseDouble(trimTempStrNum) * 12; //convert feet to inches
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
-                		return false;
-                	}
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="RotateMotor(OUT_"+leftMotor+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }       
-                else if (splitString[i].contains("move_backward_in"))
-                {  
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double distance = 0.0;
-                	try {
-                		distance = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
-                		return false;
-                	}
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="RotateMotor(OUT_"+leftMotor+rightMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }
-                else if (splitString[i].contains("move_backward_ft"))
-                {   
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double distance = 0.0;
-                	try {
-                		distance = Double.parseDouble(trimTempStrNum) * 12;//convert feet to inches
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
-                		return false;
-                	}
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="RotateMotor(OUT_"+leftMotor+rightMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }  
-                */
                 else if (splitString[i].contains("turn_left"))
                 {    
                 	String[] tempStrNum = splitString[i].split("!");
@@ -702,7 +638,21 @@ public class LegoCodeGenPython extends Application {
                 	
                 	result[r] = PythonCode;
                 	r++;
-                }      
+                }  
+                /*
+                else if(splitString[i].contains("color_is_seen"))
+                {
+                    if(color_sen.equals("Not used")){
+                        JOptionPane.showMessageDialog(null, "Please give the color sensor a valid input number");
+                        return false;
+                    }
+                    int threshold = 0;
+                    String[] tempStrNum = splitString[i].split("!");
+                    String trimTempStr = temStrNum[1].trim();
+                    String PythonCode="";
+                    PythonCode=""
+                }   */
+                 
                 else if (splitString[i].contains("sound_sensor_fwd"))
                 {   
                 	if (sound_sen.equals("Not used")) {
@@ -811,7 +761,7 @@ public class LegoCodeGenPython extends Application {
                 	String PythonCode="SetSensorSound(IN_"+sound_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nif(Sensor(IN_"+sound_sen+") > "+threshold+"){\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}}\n";
                 	result[r] = PythonCode;
                 	r++;
-                }                                                                        
+                }                                                                      
                 else{}  
             }
         }
