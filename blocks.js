@@ -155,7 +155,7 @@ Blockly.Blocks['number'] = {
 	init: function() {
 		this.appendDummyInput()
         .appendField(new Blockly.FieldNumber(0), "numberIn");
-        this.setOutput(true, "Number");
+        this.setOutput(true, null);
         this.setColour(230);
         this.setTooltip("");
         this.setHelpUrl("");
@@ -174,44 +174,45 @@ Blockly.Blocks['boolean'] = {
 };
 
 Blockly.Blocks['arithmeticop'] = {
-  init: function() {
-    this.appendValueInput("val1")
+	init: function() {
+		this.appendValueInput("val1")
         .setCheck(null);
-    this.appendDummyInput()
+        this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown([["+","add"], ["-","subtract"], ["*","multiply"], ["/","divide"]]), "operation");
-    this.appendValueInput("val2")
+        this.appendValueInput("val2")
         .setCheck(null);
-    this.setOutput(true, null);
-    this.setColour(230);
- this.setTooltip("Arithmetic operations");
- this.setHelpUrl("");
-  }
+        this.setOutput(true, null);
+        this.setColour(230);
+        this.setTooltip("Arithmetic operations");
+        this.setHelpUrl("");
+    }
 };
 Blockly.Blocks['compare'] = {
-  init: function() {
-    this.appendValueInput("val1")
+	init: function() {
+		this.appendValueInput("val1")
         .setCheck(null);
-    this.appendDummyInput()
+        this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown([["==","equal"], ["!=","notEqual"], ["<","lessThan"], [">","greaterThan"], ["<=","lessOrEqual"], [">=","greaterOrEqual"]]), "compareType");
-    this.appendValueInput("val2")
+        this.appendValueInput("val2")
         .setCheck(null);
-    this.setOutput(true, "Boolean");
-    this.setColour(230);
- this.setTooltip("Compare, outputs true/false value");
- this.setHelpUrl("");
-  }
+        this.appendDummyInput();
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("Compare, outputs true/false value");
+        this.setHelpUrl("");
+    }
 };
 Blockly.Blocks['if_statement'] = {
-  init: function() {
-    this.appendValueInput("trigger")
+	init: function() {
+		this.appendValueInput("trigger")
         .setCheck("Boolean")
         .appendField("If:");
-    this.appendStatementInput("code")
+        this.appendStatementInput("code")
         .setCheck(null);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(230);
- this.setTooltip("If statement, code runs if statement is true");
- this.setHelpUrl("");
-  }
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(230);
+        this.setTooltip("If statement, code runs if statement is true");
+        this.setHelpUrl("");
+    }
 };

@@ -98,7 +98,7 @@ Blockly.JavaScript['boolean'] = function(block) {
 	return code;
 };
 
-Blockly.JavaScript['arithmeticOp'] = function(block) {
+Blockly.JavaScript['arithmeticop'] = function(block) {
   var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
   var dropdown_operation = block.getFieldValue('operation');
   var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
@@ -108,7 +108,7 @@ Blockly.JavaScript['arithmeticOp'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['numbercompare'] = function(block) {
+Blockly.JavaScript['compare'] = function(block) {
   var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
   var dropdown_comparetype = block.getFieldValue('compareType');
   var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
@@ -121,6 +121,6 @@ Blockly.JavaScript['if_statement'] = function(block) {
   var value_trigger = Blockly.JavaScript.valueToCode(block, 'trigger', Blockly.JavaScript.ORDER_ATOMIC);
   var statements_code = Blockly.JavaScript.statementToCode(block, 'code');
   // TODO: Assemble JavaScript into code variable.
-  var code = statements_code+'\n|'; // | is the char signifying a decrement in tab counter
+  var code = 'ifStatement_'+statements_code+'|'; // | is the char signifying a decrement in tab counter
   return code;
 };
