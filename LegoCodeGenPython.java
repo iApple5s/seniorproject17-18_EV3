@@ -454,7 +454,9 @@ public class LegoCodeGenPython extends Application {
         if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor2+"')"; r++;} 
         String ColorSensor = "cl = ColorSensor()";
         result[r] = ColorSensor; r++;
-        if(ColorSensor.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
+        // Initialize sensors that are used
+        if(color_sen.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
+        if(touch_sen.equals("Not used")){} else{result[r] = "
 
         int motorPowerInt = Integer.parseInt(motorPower) * 100;
         
@@ -482,6 +484,7 @@ public class LegoCodeGenPython extends Application {
         
         for (int i = 0; i < splitString.length; i ++)
         { 
+        	System.out.println(splitString[i]);
         	String tabs = String.join("", Collections.nCopies(tCount,"\t"));
         	if (splitString[i]=="NULL" || splitString[i]=="" || splitString[i]==" "|| splitString[i]=="EOF")
         	{
@@ -494,7 +497,7 @@ public class LegoCodeGenPython extends Application {
                 	String trimTempStrNum = tempStrNum[1].trim();
                 	double distance = 0.0;
                 	String direction = null;
-                	try {
+                	try { // Check if there is a valid number entered in a block
                 		distance = Double.parseDouble(trimTempStrNum);
                 	} catch (Exception e){
                 		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
@@ -521,13 +524,37 @@ public class LegoCodeGenPython extends Application {
                 	PythonCode = tabs+"motorR.wait_while('running')";
                 	result[r] = PythonCode; r++;
                 }
-                if (splitString[i].contains("Sound.speak")){
+                else if (splitString[i].contains("Sound.speak")){
                 	String[] tempStr = splitString[i].split("_");
                 	
-                	String PythonCode = "Sound.speak(\""+tempStr[1]+"\")";
+                	String PythonCode = tabs + "Sound.speak(\""+tempStr[1]+"\")";
 
                 	result[r] = PythonCode; r++;
                 }
+                
+                else if (splitString[i].contains("turn"){
+                	String[] tempStrNum = splitString[i].split("!");
+                	String trimTempStrNum = tempStrNum[1].trim();
+                	double tempDegrees = 0.0;
+                	try {
+                		tempDegrees = Double.parseDouble(trimTempStrNum);
+                	} catch (Exception e){
+                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the turn block");
+                		return false;
+                	}     
+                	double distance = (tempDegrees/360D) * turnCircum;
+                	long revDeg = revolutionsDeg(wheelCircum,distance);
+                	String tempStrCalculated = Long.toString(revDeg); 
+                	String PythonCode = null;
+                	if (splitString[i].contains("left")){
+                		PythonCode="RotateMotor(OUT_"+leftMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
+                	} else { // right turn
+                		PythonCode="RotateMotor(OUT_"+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
+                	}
+                	result[r] = PythonCode;
+                	r++;
+                }
+                /*
                 else if (splitString[i].contains("turn_left"))
                 {    
                 	String[] tempStrNum = splitString[i].split("!");
@@ -563,7 +590,30 @@ public class LegoCodeGenPython extends Application {
                 	String PythonCode="RotateMotor(OUT_"+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
                 	result[r] = PythonCode;
                 	r++;
-                }    
+                }
+                */
+                // constant rotation until condition blocks.
+                else if (splitString[i].contains("touch_sensor_fwd") || splitString[i].contains("distance_sensor_fwd")
+                	|| splitString[i].contains("light_sensor_fwd") || splitString[i].contains("sound_sensor_fwd")
+                	|| splitString[i].contains("touch_sensor_bwd") || splitString[i].contains("distance_sensor_bwd")
+                	|| splitString[i].contains("light_sensor_bwd") || splitString[i].contains("sound_sensor_bwd")){
+                	
+                	String direction = null;
+                	if (splitString[i].contains("fwd"){
+                		direction = "+";
+                	} else {
+                		direction = "-";
+                	}
+                	if (splitString[i].contains("touch_sensor"){
+						if (touch_sen.equals("Not used")) {
+							JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
+							return false;                     
+						}
+                		
+						
+                	}
+                }
+                /*
                 else if (splitString[i].contains("touch_sensor_fwd"))
                 {    
                 	if (touch_sen.equals("Not used")) {
@@ -652,7 +702,7 @@ public class LegoCodeGenPython extends Application {
                     String PythonCode="";
                     PythonCode=""
                 }   */
-                 
+                /*
                 else if (splitString[i].contains("sound_sensor_fwd"))
                 {   
                 	if (sound_sen.equals("Not used")) {
@@ -761,7 +811,13 @@ public class LegoCodeGenPython extends Application {
                 	String PythonCode="SetSensorSound(IN_"+sound_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nif(Sensor(IN_"+sound_sen+") > "+threshold+"){\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}}\n";
                 	result[r] = PythonCode;
                 	r++;
-                }                                                                      
+                }   
+                */
+                else if(splitString[i].contains("ifStatement_")){
+                	System.out.println(splitString[i]);
+                	String[] tempSplit =  
+                	tCount++;
+                }
                 else{}  
             }
         }

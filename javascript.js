@@ -100,37 +100,36 @@ Blockly.JavaScript['boolean'] = function(block) {
 };
 
 Blockly.JavaScript['arithmeticop'] = function(block) {
-  var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
-  var dropdown_operation = block.getFieldValue('operation');
-  var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
-  var code = value_val1+dropdown_operatio+value_val2;
-  // TODO: Change ORDER_NONE to the correct strength.
-  return code;
+	var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
+	var dropdown_operation = block.getFieldValue('operation');
+	var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
+	var code = value_val1+dropdown_operatio+value_val2;
+	// TODO: Change ORDER_NONE to the correct strength.
+	return code;
 };
 
 Blockly.JavaScript['compare'] = function(block) {
-  var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
-  var dropdown_comparetype = block.getFieldValue('compareType');
-  var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
-  var code = '('+value_val1+dropdown_comparetype+value_val2+')';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return code;
+	var value_val1 = Blockly.JavaScript.valueToCode(block, 'val1', Blockly.JavaScript.ORDER_ATOMIC);
+	var dropdown_comparetype = block.getFieldValue('compareType');
+	var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
+	// TODO: Assemble JavaScript into code variable.
+	var code = '('+value_val1+dropdown_comparetype+value_val2+')';
+	// TODO: Change ORDER_NONE to the correct strength.
+	return code;
 };
 Blockly.JavaScript['if_statement'] = function(block) {
-  var value_trigger = Blockly.JavaScript.valueToCode(block, 'trigger', Blockly.JavaScript.ORDER_ATOMIC);
-  var statements_code = Blockly.JavaScript.statementToCode(block, 'code');
-  // TODO: Assemble JavaScript into code variable.
-  var code = 'ifStatement_'+statements_code+'|'; // | is the char signifying a decrement in tab counter
-  return code;
+	var value_trigger = Blockly.JavaScript.valueToCode(block, 'trigger', Blockly.JavaScript.ORDER_ATOMIC);
+	var statements_code = Blockly.JavaScript.statementToCode(block, 'code');
+	// TODO: Assemble JavaScript into code variable.
+	var code = 'ifStatement_'+valueTringger+"\n"+statements_code+'|'; // | is the char signifying a decrement in tab counter
+	return code;
 };
 
 //If statement conditions
 
 //What color is being seen block
 Blockly.JavaScript['color_is_seen'] = function(block) {
-  var dropdown_color = block.getFieldValue('color');
-  var code = dropdown_color;
-  return code;
+	var dropdown_color = block.getFieldValue('color');
+	var code = dropdown_color;
+	return code;
 };
