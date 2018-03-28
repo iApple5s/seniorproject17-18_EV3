@@ -815,8 +815,13 @@ public class LegoCodeGenPython extends Application {
                 */
                 else if(splitString[i].contains("ifStatement_")){
                 	System.out.println(splitString[i]);
-                	String[] tempSplit =  
+                	String[] tempSplit =  splitString[i].split("_");
+                	
+                	String PythonCode = "if "+tempSplit[1]+":"
                 	tCount++;
+                }
+                else if(splitString[i].equals("|")){
+                	tCount--;	
                 }
                 else{}  
             }
@@ -884,4 +889,10 @@ public class LegoCodeGenPython extends Application {
     	launch(args);
     }
 }
+/*
+meeting notes
 
+make turns around robot center, not wheel
+establish convention for order of motor commands
+
+*/
