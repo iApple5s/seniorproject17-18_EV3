@@ -543,13 +543,15 @@ public class LegoCodeGenPython extends Application {
                 		return false;
                 	}     
                 	double distance = (tempDegrees/360D) * turnCircum;
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
+                	long revDeg = revolutionsDeg(wheelCircum,distance)/2; // dividing by 2 to use both motors instead of one. may need recalculation
                 	String tempStrCalculated = Long.toString(revDeg); 
                 	String PythonCode = null;
                 	if (splitString[i].contains("left")){
-                		PythonCode="RotateMotor(OUT_"+leftMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	} else { // right turn
+                		PythonCode="RotateMotor(OUT_"+leftMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
                 		PythonCode="RotateMotor(OUT_"+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
+                	} else { // right turn
+                		PythonCode="RotateMotor(OUT_"+leftMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
+                		PythonCode="RotateMotor(OUT_"+rightMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
                 	}
                 	result[r] = PythonCode;
                 	r++;
