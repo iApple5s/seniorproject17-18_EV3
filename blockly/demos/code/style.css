@@ -68,6 +68,7 @@ h1 {
 /* Tabs */
 #tabRow>td {
   border: 1px solid #ccc;
+  border-bottom: none;
 }
 td.tabon {
   border-bottom-color: #ddd !important;
@@ -117,6 +118,7 @@ td {
   direction: ltr;
 }
 pre.content {
+  border: 1px solid #ccc;
   overflow: scroll;
 }
 #content_blocks {
@@ -128,14 +130,15 @@ pre.content {
 #content_xml {
   resize: none;
   outline: none;
-  border: none;
+  border: 1px solid #ccc;
   font-family: monospace;
   overflow: scroll;
 }
 #languageMenu {
   vertical-align: top;
-  margin-top: 15px;
+  margin-left: 15px;
   margin-right: 15px;
+  margin-top: 15px;
 }
 
 /* Buttons */

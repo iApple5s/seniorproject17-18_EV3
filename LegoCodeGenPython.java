@@ -76,12 +76,12 @@ public class LegoCodeGenPython extends Application {
         
         //These JavaFX objects are the UI elements that populate the stage
         TextField txtTrackWidth, txtWheelDiameter, txtOutput, txtBotIPAddress;
-        Label lblWheelDiameter, lblTrackWidth, lblTouchSensor, lblLeftMotor, lblRightMotor,
+        Label lblWheelDiameter, lblTrackWidth, lblTouchSensor, lblLeftMotor, lblRightMotor, 
         lblSoundSensor, lblColorSensor, lblUltrasonicSensor, lblLightSensor, lblMotorPower, lblOutput,
-        lblBotIPAddress, lblAuxMotor1, lblAuxMotor2;
+        lblBotIPAddress, lblAuxMotor1, lblAuxMotor2, lblInfraredSensor, lblGyroSensor;
         Button btnSaveSettings, btnLoadSettings, btnZoomIn, btnZoomOut, btnDownloadCode;
         ComboBox cboLeftMotor, cboRightMotor, cboTouchSensor, cboUltrasonicSensor, 
-        cboSoundSensor, cboLightSensor, cboColorSensor, cboMotorPower, cboAuxMotor1, cboAuxMotor2;
+        cboSoundSensor, cboLightSensor, cboColorSensor, cboMotorPower, cboAuxMotor1, cboAuxMotor2, cboInfraredSensor, cboGyroSensor;
         
         //This gridPane is the grid that holds all the JavaFX objects in place when the UI is resized
         GridPane gridPane = new GridPane();
@@ -130,10 +130,22 @@ public class LegoCodeGenPython extends Application {
         cboUltrasonicSensor.getItems().addAll ("Not used", "1", "2", "3", "4");
         cboUltrasonicSensor.setValue("Not used");
         
+        lblInfraredSensor = new Label("Infrared Sensor");
+        cboInfraredSensor = new ComboBox();
+        cboInfraredSensor.getItems().addAll ("Not used", "1", "2", "3", "4");
+        cboInfraredSensor.setValue("Not used");
+        
+        /*
         lblSoundSensor = new Label("Sound Sensor");
         cboSoundSensor = new ComboBox();
         cboSoundSensor.getItems().addAll ("Not used", "1", "2", "3", "4");
         cboSoundSensor.setValue("Not used");
+        */
+        
+        lblGyroSensor = new Label("Gyroscope");
+        cboGyroSensor = new ComboBox();
+        cboGyroSensor.getItems().addAll ("Not used", "1", "2", "3", "4");
+        cboGyroSensor.setValue("Not used");
         
         lblLightSensor = new Label("Light Sensor");
         cboLightSensor = new ComboBox();
@@ -160,12 +172,15 @@ public class LegoCodeGenPython extends Application {
         		String code = (String) webEngine.executeScript("getCode()");
         		
         		//String code = (String) webEngine.executeScript("getCode()");
-        		String touch_sen, light_sen, sound_sen, color_sen, ultrasonic_sen, leftMotor, rightMotor, AuxMotor1, AuxMotor2, wheelDiam, trackWid, motorPower, IPAddress, output;              
+        		String touch_sen, light_sen, gyro_sen, color_sen, ultrasonic_sen, infrared_sen, leftMotor, rightMotor, AuxMotor1, AuxMotor2, wheelDiam, trackWid, motorPower, IPAddress, output;
+        		//sound_sen
         		touch_sen = cboTouchSensor.getValue().toString();
         		light_sen = cboLightSensor.getValue().toString();
-        		sound_sen = cboSoundSensor.getValue().toString();
+        		//sound_sen = cboSoundSensor.getValue().toString();
+        		gyro_sen = cboGyroSensor.getValue().toString();
                 color_sen = cboColorSensor.getValue().toString();
         		ultrasonic_sen = cboUltrasonicSensor.getValue().toString();
+        		infrared_sen = cboInfraredSensor.getValue().toString();
         		leftMotor = cboLeftMotor.getValue().toString();
         		rightMotor = cboRightMotor.getValue().toString();
         		AuxMotor1 = cboAuxMotor1.getValue().toString();
@@ -176,8 +191,8 @@ public class LegoCodeGenPython extends Application {
         		IPAddress = txtBotIPAddress.getText();
         		output = txtOutput.getText();                                                           
         		//Now we take the code string and pass it to the parser to get what we need.
-        		parser(code, touch_sen, light_sen, sound_sen, ultrasonic_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower, output, AuxMotor1, AuxMotor2, IPAddress);
-        });
+        		parser(code, touch_sen, color_sen, gyro_sen, ultrasonic_sen, infrared_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower, output, AuxMotor1, AuxMotor2, IPAddress);
+        });     // sound_sen, light_sen
         
         //This button rescales the contents of the WebView browser by a factor of +.1
         btnZoomIn = new Button ("Zoom In");
@@ -188,9 +203,13 @@ public class LegoCodeGenPython extends Application {
         btnZoomOut = new Button ("Zoom Out");
         btnZoomOut.setOnAction((ActionEvent t) -> {
         		zoom(-0.1,browser);
-        });      
-        //This button saves the current state of necessary the JavaFX UI objects and saves them to a file
+        });
+        
         btnSaveSettings = new Button ("Save Settings");
+        btnLoadSettings = new Button ("Load Settings");
+        /*
+        //This button saves the current state of necessary the JavaFX UI objects and saves them to a file
+        
         btnSaveSettings.setOnAction((ActionEvent t) -> {
         		//save the current state of the UI elements
         		String touch_sen, light_sen, sound_sen, color_sen, ultrasonic_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower;   
@@ -199,6 +218,7 @@ public class LegoCodeGenPython extends Application {
         		sound_sen = cboSoundSensor.getValue().toString();
                 color_sen = cboColorSensor.getValue().toString();
         		ultrasonic_sen = cboUltrasonicSensor.getValue().toString();
+        		infrared_sen = cboInfraredSensor.getValue().toString();
         		leftMotor = cboLeftMotor.getValue().toString();
         		rightMotor = cboRightMotor.getValue().toString();
         		motorPower = cboMotorPower.getValue().toString();
@@ -225,7 +245,7 @@ public class LegoCodeGenPython extends Application {
                 }
         });
         //This button loads the settings stored in a file to the UI objects
-        btnLoadSettings = new Button ("Load Settings");
+        
         btnLoadSettings.setOnAction((ActionEvent t) -> {
                 FileChooser fileChooser = new FileChooser();
                 
@@ -248,11 +268,12 @@ public class LegoCodeGenPython extends Application {
                         cboLeftMotor.setValue(splitSettingString[2]);     
                         cboRightMotor.setValue(splitSettingString[3]);     
                         cboTouchSensor.setValue(splitSettingString[4]);     
-                        cboUltrasonicSensor.setValue(splitSettingString[5]);     
-                        cboSoundSensor.setValue(splitSettingString[6]);     
-                        cboLightSensor.setValue(splitSettingString[7]); 
-                        cboColorSensor.setValue(splitSettingString[8]);    
-                        cboMotorPower.setValue(splitSettingString[9]);
+                        cboUltrasonicSensor.setValue(splitSettingString[5]); 
+                        cboInfraredSensor.setValue(splitSettingString[6]);
+                        cboSoundSensor.setValue(splitSettingString[7]);     
+                        cboLightSensor.setValue(splitSettingString[8]); 
+                        cboColorSensor.setValue(splitSettingString[9]);    
+                        cboMotorPower.setValue(splitSettingString[10]);
                     }
                     catch (Exception e) {
                         //something didnt work
@@ -260,7 +281,9 @@ public class LegoCodeGenPython extends Application {
                     } 
                 }
                 
-        });               
+        });   
+        
+        */
         
         //This is where we define the gridPane() and UI elements to have the desired constraints 
         BorderPane background = new BorderPane();
@@ -287,7 +310,7 @@ public class LegoCodeGenPython extends Application {
         
         
         
-        gridPane.add (browser,             0, 0,  1, 16);
+        gridPane.add (browser,             0, 0,  1, 18);
         gridPane.add (lblTrackWidth,       1, 0,  1, 1);
         gridPane.add (txtTrackWidth,       2, 0,  1, 1);
         gridPane.add (lblWheelDiameter,    1, 1,  1, 1);
@@ -305,25 +328,35 @@ public class LegoCodeGenPython extends Application {
         gridPane.add (lblTouchSensor,      1, 6,  1, 1);
         gridPane.add (cboTouchSensor,      2, 6,  1, 1);         
         gridPane.add (lblUltrasonicSensor, 1, 7,  1, 1);
-        gridPane.add (cboUltrasonicSensor, 2, 7,  1, 1);         
-        gridPane.add (lblSoundSensor,      1, 8,  1, 1);
-        gridPane.add (cboSoundSensor,      2, 8,  1, 1);         
-        gridPane.add (lblLightSensor,      1, 9,  1, 1);
-        gridPane.add (cboLightSensor,      2, 9,  1, 1);
-        gridPane.add (lblColorSensor,      1, 10,  1, 1);
-        gridPane.add (cboColorSensor,      2, 10,  1, 1);
-        gridPane.add (lblMotorPower,       1, 11, 1, 1);
-        gridPane.add (cboMotorPower,       2, 11, 1, 1); 
-        gridPane.add (lblOutput,           1, 12, 1, 1);
-        gridPane.add (txtOutput,           2, 12, 1, 1);
-        gridPane.add (btnSaveSettings,     1, 13, 1, 1);
-        gridPane.add (btnLoadSettings,     2, 13, 1, 1);
-        gridPane.add (lblBotIPAddress,     1, 14, 1, 1);
-  		gridPane.add (txtBotIPAddress,     2, 14, 1, 1);
-        gridPane.add (spacer,              1, 15, 2, 1);   
-        gridPane.add (btnZoomIn,           1, 16, 1, 1);
-        gridPane.add (btnZoomOut,          2, 16, 1, 1);                                                  
-        gridPane.add (btnDownloadCode,     1, 17, 2, 1);      
+        gridPane.add (cboUltrasonicSensor, 2, 7,  1, 1); 
+        
+        gridPane.add (lblInfraredSensor,   1, 8,  1, 1);
+        gridPane.add (cboInfraredSensor,   2, 8,  1, 1);
+        	
+        /*
+        gridPane.add (lblSoundSensor,      1, 9,  1, 1);
+        gridPane.add (cboSoundSensor,      2, 9,  1, 1);         
+        
+        */
+        gridPane.add (lblGyroSensor,       1, 9,  1, 1);
+        gridPane.add (cboGyroSensor,       2, 9,  1, 1);    
+        gridPane.add (lblLightSensor,      1, 10, 1, 1);
+        gridPane.add (cboLightSensor,      2, 10, 1, 1);
+  
+        gridPane.add (lblColorSensor,      1, 11, 1, 1);
+        gridPane.add (cboColorSensor,      2, 11, 1, 1);
+        gridPane.add (lblMotorPower,       1, 12, 1, 1);
+        gridPane.add (cboMotorPower,       2, 12, 1, 1); 
+        gridPane.add (lblOutput,           1, 13, 1, 1);
+        gridPane.add (txtOutput,           2, 13, 1, 1);
+        gridPane.add (btnSaveSettings,     1, 14, 1, 1);
+        gridPane.add (btnLoadSettings,     2, 14, 1, 1);
+        gridPane.add (lblBotIPAddress,     1, 15, 1, 1);
+  		gridPane.add (txtBotIPAddress,     2, 15, 1, 1);
+        gridPane.add (spacer,              1, 16, 2, 1);   
+        gridPane.add (btnZoomIn,           1, 17, 1, 1);
+        gridPane.add (btnZoomOut,          2, 17, 1, 1);                                                  
+        gridPane.add (btnDownloadCode,     1, 18, 2, 1);      
         
         Scene scene = new Scene(gridPane, 1200, 600);
         stage.setScene(scene);
@@ -410,25 +443,26 @@ public class LegoCodeGenPython extends Application {
         return stringBuffer.toString();
     }
     
-    public boolean parser(String splitMe, String touch_sen, String light_sen, String sound_sen, String color_sen, String distance_sen, String leftMotor, String rightMotor, String wheelDiam, String trackWid, String motorPower, String output, String AuxMotor1, String AuxMotor2, String IPAddress) {
+    public boolean parser(String splitMe, String touch_sen, String color_sen, String gyro_sen, String ultrasonic_sen, String infrared_sen, String leftMotor, String rightMotor, String wheelDiam, String trackWid, String motorPower, String output, String AuxMotor1, String AuxMotor2, String IPAddress) {
     	/**
     	* parser takes the current state of the blockly workspace and values from the UI to generate syntactically correct nxc code 
     	* for the robot to execute
     	*
     	* ---Inputs---
-    	* String splitMe      This is the string generated by the blockly blocks passed from the blockly.html workspace to the java application
-    	* String touch_sen    This is the string value of the touch sensor drop down
-    	* String light_sen    This is the string value of the light sensor drop down
-    	* String sound_sen    This is the string value of the sound sensor drop down
-    	* String distance_sen This is the string value of the ultrasonic sensor drop down
-    	* String leftMotor    This is the string value of the left motor drop down
-    	* String rightMotor   This is the string value of the right motor drop down
-    	* String wheelDiam    This is the string value of the wheel diameter text box
-    	* String trackWid     This is the string value of the track width diameter text box
-    	* String motorPower   This is the string value of the motor power drop down
-    	* String output       This is the string value of the output file name text box
-    	* String AuxMotor1	  This is the string value of the Aux Motor 1 drop down
-    	* String AuxMotor2    This is the string value of the Aux Motor 2 drop down
+    	* String splitMe      	This is the string generated by the blockly blocks passed from the blockly.html workspace to the java application
+    	* String touch_sen    	This is the string value of the touch sensor drop down
+    	* String light_sen    	This is the string value of the light sensor drop down
+    	* String gyro_sen    	This is the string value of the gyro sensor drop down
+    	* String ultrasonic_sen This is the string value of the ultrasonic sensor drop down
+    	* String infrared_sen	This is the string value of the ultrasonic sensor drop down
+    	* String leftMotor    	This is the string value of the left motor drop down
+    	* String rightMotor   	This is the string value of the right motor drop down
+    	* String wheelDiam    	This is the string value of the wheel diameter text box
+    	* String trackWid     	This is the string value of the track width diameter text box
+    	* String motorPower   	This is the string value of the motor power drop down
+    	* String output       	This is the string value of the output file name text box
+    	* String AuxMotor1	  	This is the string value of the Aux Motor 1 drop down
+    	* String AuxMotor2    	This is the string value of the Aux Motor 2 drop down
     	* ---Outputs---
     	* boolean the reason this is not a void function is because there are cases where I have to return out of the function early to avoid errors
     	*/      
@@ -452,11 +486,19 @@ public class LegoCodeGenPython extends Application {
         result[r] = MotorImport2; r++;        
         if(AuxMotor1.contains("Not Used")){} else {result[r] = "AuxMotor1 = MediumMotor('out"+AuxMotor1+"')"; r++;} 
         if(AuxMotor2.contains("Not Used")){} else {result[r] = "AuxMotor2 = MediumMotor('out"+AuxMotor2+"')"; r++;} 
-        String ColorSensor = "cl = ColorSensor()";
-        result[r] = ColorSensor; r++;
         // Initialize sensors that are used
-        if(color_sen.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
-        if(touch_sen.equals("Not used")){} else{result[r] = "
+        if(color_sen.contains("Not used")){} else{result[r] = "cl = ColorSensor(); assert cl.connected, 'Connect a color sensor to any port'" ; r++;}
+        // color mode (reflected intensity, ambient intensity, color of object/surface) set in the program, so it can be changed on the fly
+        //if(color_sen.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
+        
+        // reports Boolean true/false
+        if(touch_sen.contains("Not used")){} else{result[r] = "ts = TouchSensor(); assert ts.connected, 'Connect a touch sensor to any port'"; r++;}
+        
+        // Ultrasonic will report distance as mm num, even tho set to cm unit.
+        if(ultrasonic_sen.contains("Not used")){} else{result[r] = "us = UltrasonicSensor(); assert us.connected, 'Connect an ultrasonic sensor to any sensor port'"; r++;}
+        if(ultrasonic_sen.contains("Not used")){} else{result[r] = "us.mode='US-DIST-CM'"; r++;}
+        
+        if(gyro_sen.contains("Not used")){} else{result[r] = "gy = GyroSensor(); assert gy.connected, 'Connect a single gyro sensor to any sensor port';gy.mode='GYRO-ANG'"; r++;}
 
         int motorPowerInt = Integer.parseInt(motorPower) * 100;
         
@@ -532,7 +574,7 @@ public class LegoCodeGenPython extends Application {
                 	result[r] = PythonCode; r++;
                 }
                 
-                else if (splitString[i].contains("turn"){
+                else if (splitString[i].contains("turn")){
                 	String[] tempStrNum = splitString[i].split("!");
                 	String trimTempStrNum = tempStrNum[1].trim();
                 	double tempDegrees = 0.0;
@@ -601,12 +643,12 @@ public class LegoCodeGenPython extends Application {
                 	|| splitString[i].contains("light_sensor_bwd") || splitString[i].contains("sound_sensor_bwd")){
                 	
                 	String direction = null;
-                	if (splitString[i].contains("fwd"){
+                	if (splitString[i].contains("fwd")){
                 		direction = "+";
                 	} else {
                 		direction = "-";
                 	}
-                	if (splitString[i].contains("touch_sensor"){
+                	if (splitString[i].contains("touch_sensor")){
 						if (touch_sen.equals("Not used")) {
 							JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
 							return false;                     
@@ -819,10 +861,10 @@ public class LegoCodeGenPython extends Application {
                 	System.out.println(splitString[i]);
                 	String[] tempSplit =  splitString[i].split("_");
                 	
-                	String PythonCode = "if "+tempSplit[1]+":"
+                	String PythonCode = "if "+tempSplit[1]+":";
                 	tCount++;
                 }
-                else if(splitString[i].equals("|")){
+                else if(splitString[i].contains("|")){
                 	tCount--;	
                 }
                 else{}  

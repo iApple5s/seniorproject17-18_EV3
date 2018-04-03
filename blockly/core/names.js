@@ -31,18 +31,30 @@ goog.provide('Blockly.Names');
  * Class for a database of entity names (variables, functions, etc).
  * @param {string} reservedWords A comma-separated string of words that are
  *     illegal for use as names in a language (e.g. 'new,if,this,...').
+ * @param {string=} opt_variablePrefix Some languages need a '$' or a namespace
+ *     before all variable names.
  * @constructor
  */
-Blockly.Names = function(reservedWords) {
+Blockly.Names = function(reservedWords, opt_variablePrefix) {
+  this.variablePrefix_ = opt_variablePrefix || '';
   this.reservedDict_ = Object.create(null);
   if (reservedWords) {
     var splitWords = reservedWords.split(',');
-    for (var x = 0; x < splitWords.length; x++) {
-      this.reservedDict_[splitWords[x]] = true;
+    for (var i = 0; i < splitWords.length; i++) {
+      this.reservedDict_[splitWords[i]] = true;
     }
   }
   this.reset();
 };
+
+/**
+ * Constant to separate developer variable names from user-defined variable
+ * names when running generators.
+ * A developer variable will be declared as a global in the generated code, but
+ * will never be shown to the user in the workspace or stored in the variable
+ * map.
+ */
+Blockly.Names.DEVELOPER_VARIABLE_TYPE = 'DEVELOPER_VARIABLE';
 
 /**
  * When JavaScript (or most other languages) is generated, variable 'foo' and
@@ -59,6 +71,41 @@ Blockly.Names = function(reservedWords) {
 Blockly.Names.prototype.reset = function() {
   this.db_ = Object.create(null);
   this.dbReverse_ = Object.create(null);
+  this.variableMap_ = null;
+};
+
+/**
+ * Set the variable map that maps from variable name to variable object.
+ * @param {!Blockly.VariableMap} map The map to track.
+ * @package
+ */
+Blockly.Names.prototype.setVariableMap = function(map) {
+  this.variableMap_ = map;
+};
+
+/**
+ * Get the name for a user-defined variable, based on its ID.
+ * This should only be used for variables of type Blockly.Variables.NAME_TYPE.
+ * @param {string} id The ID to look up in the variable map.
+ * @return {?string} The name of the referenced variable, or null if there was
+ *     no variable map or the variable was not found in the map.
+ * @private
+ */
+Blockly.Names.prototype.getNameForUserVariable_ = function(id) {
+  if (!this.variableMap_) {
+    console.log('Deprecated call to Blockly.Names.prototype.getName without ' +
+        'defining a variable map. To fix, add the folowing code in your ' +
+        'generator\'s init() function:\n' +
+        'Blockly.YourGeneratorName.variableDB_.setVariableMap(' +
+        'workspace.getVariableMap());');
+    return null;
+  }
+  var variable = this.variableMap_.getVariableById(id);
+  if (variable) {
+    return variable.name;
+  } else {
+    return null;
+  }
 };
 
 /**
@@ -66,15 +113,26 @@ Blockly.Names.prototype.reset = function() {
  * @param {string} name The Blockly entity name (no constraints).
  * @param {string} type The type of entity in Blockly
  *     ('VARIABLE', 'PROCEDURE', 'BUILTIN', etc...).
- * @return {string} An entity name legal for the exported language.
+ * @return {string} An entity name that is legal in the exported language.
  */
 Blockly.Names.prototype.getName = function(name, type) {
+  if (type == Blockly.Variables.NAME_TYPE) {
+    var varName = this.getNameForUserVariable_(name);
+    if (varName) {
+      name = varName;
+    }
+  }
   var normalized = name.toLowerCase() + '_' + type;
+
+  var isVarType = type == Blockly.Variables.NAME_TYPE ||
+      type == Blockly.Names.DEVELOPER_VARIABLE_TYPE;
+
+  var prefix = isVarType ? this.variablePrefix_ : '';
   if (normalized in this.db_) {
-    return this.db_[normalized];
+    return prefix + this.db_[normalized];
   }
   var safeName = this.getDistinctName(name, type);
-  this.db_[normalized] = safeName;
+  this.db_[normalized] = safeName.substr(prefix.length);
   return safeName;
 };
 
@@ -86,7 +144,7 @@ Blockly.Names.prototype.getName = function(name, type) {
  * @param {string} name The Blockly entity name (no constraints).
  * @param {string} type The type of entity in Blockly
  *     ('VARIABLE', 'PROCEDURE', 'BUILTIN', etc...).
- * @return {string} An entity name legal for the exported language.
+ * @return {string} An entity name that is legal in the exported language.
  */
 Blockly.Names.prototype.getDistinctName = function(name, type) {
   var safeName = this.safeName_(name);
@@ -98,7 +156,10 @@ Blockly.Names.prototype.getDistinctName = function(name, type) {
   }
   safeName += i;
   this.dbReverse_[safeName] = true;
-  return safeName;
+  var isVarType = type == Blockly.Variables.NAME_TYPE ||
+      type == Blockly.Names.DEVELOPER_VARIABLE_TYPE;
+  var prefix = isVarType ? this.variablePrefix_ : '';
+  return prefix + safeName;
 };
 
 /**
