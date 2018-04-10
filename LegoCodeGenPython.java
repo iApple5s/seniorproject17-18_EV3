@@ -480,6 +480,7 @@ public class LegoCodeGenPython extends Application {
         r = r + 3;
         // Motor and other variable declaration
         //Primary and Auxilary motors
+        
         String MotorImport1 = "motorL = LargeMotor('out"+leftMotor+"')";
         String MotorImport2 = "motorR = LargeMotor('out"+rightMotor+"')";
         result[r] = MotorImport1; r++;
@@ -489,7 +490,7 @@ public class LegoCodeGenPython extends Application {
         // Initialize sensors that are used
         if(color_sen.contains("Not used")){} else{result[r] = "cl = ColorSensor(); assert cl.connected, 'Connect a color sensor to any port'" ; r++;}
         // color mode (reflected intensity, ambient intensity, color of object/surface) set in the program, so it can be changed on the fly
-        //if(color_sen.contains("Not used")){} else{result[r] = "cl.mode = 'COL-COLOR'"; r++;}
+        
         
         // reports Boolean true/false
         if(touch_sen.contains("Not used")){} else{result[r] = "ts = TouchSensor(); assert ts.connected, 'Connect a touch sensor to any port'"; r++;}
@@ -498,7 +499,13 @@ public class LegoCodeGenPython extends Application {
         if(ultrasonic_sen.contains("Not used")){} else{result[r] = "us = UltrasonicSensor(); assert us.connected, 'Connect an ultrasonic sensor to any sensor port'"; r++;}
         if(ultrasonic_sen.contains("Not used")){} else{result[r] = "us.mode='US-DIST-CM'"; r++;}
         
+        // Gyro outputs degrees, not sure of resolution.
         if(gyro_sen.contains("Not used")){} else{result[r] = "gy = GyroSensor(); assert gy.connected, 'Connect a single gyro sensor to any sensor port';gy.mode='GYRO-ANG'"; r++;}
+        
+        // Ultrasonic will report distance as mm num, even tho set to cm unit.
+        if(infrared_sen.contains("Not used")){} else{result[r] = "ir = InfraredSensor(); assert ir.connected, 'Connect an infrared sensor to any sensor port'"; r++;}
+        if(infrared_sen.contains("Not used")){} else{result[r] = "ir.mode='IR-PROX'"; r++;}
+        
 
         int motorPowerInt = Integer.parseInt(motorPower) * 100;
         
@@ -598,6 +605,43 @@ public class LegoCodeGenPython extends Application {
                 	result[r] = PythonCode;
                 	r++;
                 }
+                
+                // begin sensor reading
+                
+                else if(splitString[i].contains("")){  // Infrared sensor
+                	
+                } 
+                
+                else if(splitString[i].contains("")){  // Color sensor
+                	
+                } 
+                
+                else if(splitString[i].contains("")){  // Ultrasonic sensor
+                	
+                } 
+                
+                else if(splitString[i].contains("")){  // Touch sensor
+                	
+                } 
+                
+                // End sensor reading
+                
+                // Begin logical operators (not if statements)
+                
+                else if(splitString[i].contains("")){ // not equal/equivalence/greater-less than
+                	
+                } 
+                
+                else if(splitString[i].contains("")){ // and/or
+                	
+                } 
+                
+                else if(splitString[i].contains("")){ // NOT logic block
+                	
+                } 
+                
+                // End logical operators
+                
                 /*
                 else if (splitString[i].contains("turn_left"))
                 {    
@@ -857,6 +901,8 @@ public class LegoCodeGenPython extends Application {
                 	r++;
                 }   
                 */
+                
+                
                 else if(splitString[i].contains("ifStatement_")){
                 	System.out.println(splitString[i]);
                 	String[] tempSplit =  splitString[i].split("_");

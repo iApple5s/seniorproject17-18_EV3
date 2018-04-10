@@ -217,18 +217,124 @@ Blockly.Blocks['if_statement'] = {
     }
 };
 
-//If conditions 
-
-//Checking what collor is being seen block
-Blockly.Blocks['color_is_seen'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("the color is:")
-        .appendField(new Blockly.FieldDropdown([["No Color","NOCOLOR"], ["Black","BLACK"], ["Blue","BLUE"], ["Green","GREEN"],["Yellow","YELLOW"],
-            ["Red","RED"],["White","WHITE"], ["Brown","BROWN"]]), "color");
-    this.setOutput(true, "Boolean");
-    this.setColour(230);
- this.setTooltip("Compare color seen to wanted value");
- this.setHelpUrl("");
-  }
+Blockly.Blocks['touch_sensor'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Touch Sensor");
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("Returns true when pressed, false when not.");
+        this.setHelpUrl("");
+    }
 };
+
+Blockly.Blocks['combo_logic'] = {
+	init: function() {
+		this.appendValueInput("block1")
+        .setCheck("Boolean");
+        this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([["and","AND"], ["or","OR"]]), "logicOp");
+        this.appendValueInput("block2")
+        .setCheck("Boolean");
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("Boolean logic block");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['not_logic'] = {
+	init: function() {
+		this.appendValueInput("NAME")
+        .setCheck("Boolean")
+        .appendField("Not:");
+        this.appendDummyInput();
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['infrared_in'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Infrared Distance: inches")
+        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Gets current infrared distance in inches, max distance of ~27 inches");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['infrared_cm'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Infrared Distance: centimeters")
+        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Gets current infrared distance in centimeters, max distance of ~70cm");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['infrared_mm'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Infrared Distance: millimeters")
+        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Gets current infrared distance in millimeters, max distance or ~700mm");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['color_colorbool'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Is sensor seeing:")
+        .appendField(new Blockly.FieldDropdown([["Blue","BLUE"], ["Black","BLACK"], ["Brown","BROWN"], ["Green","GREEN"], ["Red","RED"], ["White","WHITE"], ["Yellow","YELLOW"], ["NoColor","NOCOLOR"]]), "COLOR")
+        .appendField("?");
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("True/false output, if sensor sees defined color");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['color_colorint'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Color int value");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Outputs current color as an int value");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['color_ambient'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Ambient Light Level");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Ambient light intensity, 0-100");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['color_reflected'] = {
+	init: function() {
+		this.appendDummyInput()
+        .appendField("Reflected Light Level");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("Reflected light level, 0-100");
+        this.setHelpUrl("");
+    }
+};
+//If conditions 

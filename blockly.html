@@ -41,24 +41,25 @@
   </head>
   <body onload="init()">
     <xml id="toolbox" style="display: none">
-      <category name="Move">
+      <category name="Movement">
         <block type="move"></block>
-      </category>
-      
-      <category name = "Turn">
         <block type="turn"></block>
       </category>
+      
+      
       <category name = "Experimental">
       	
       	<block type="led"></block>
       	<block type="speech"></block>
       	
       </category>
-      <category name = "Drive Until">
+      <category name = "Sensors">
         <block type="touch_sensor"></block>
-        <block type="distance_sensor"></block>
-        <block type="light_sensor"></block>
-        <block type="sound_sensor"></block>               
+        <block type="infrared_sensor"></block> 
+        <block type="color_colorbool"></block>
+        <block type="color_colorint"></block>
+        <block type="color_ambient"></block>
+        <block type="color_reflected"></block>
       </category>    
       <category name = "Math">
       	<block type="arithmeticop"></block>
@@ -67,8 +68,8 @@
       <category name = "Loops and Logic">
       	<block type="if_statement"></block>
       	<block type="compare"></block>
-      </category>
-      <category name = "Sensor input">
+      	<block type="combo_logic"></block>
+      	<block type="not_logic"></block>
       </category>
       <category name = "Global Variables">
       	<block type="global_declare"></block>
