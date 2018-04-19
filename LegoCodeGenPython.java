@@ -534,6 +534,7 @@ public class LegoCodeGenPython extends Application {
         for (int i = 0; i < splitString.length; i ++)
         { 
         	System.out.println(splitString[i]);
+        	
         	String tabs = String.join("", Collections.nCopies(tCount,"\t"));
         	if (splitString[i]=="NULL" || splitString[i]=="" || splitString[i]==" "|| splitString[i]=="EOF")
         	{
