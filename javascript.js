@@ -23,44 +23,6 @@ Blockly.JavaScript['move'] = function(block) {
 };
 
 
-Blockly.JavaScript['touch_sensor'] = function(block) {
-	var dir = block.getFieldValue('dir');
-	
-	var code = 'touch_sensor_'+dir+'\n';
-	
-	return code;
-};
-
-Blockly.JavaScript['distance_sensor'] = function(block) {
-	var dir  = block.getFieldValue('dir');
-	var dist = block.getFieldValue('dist');
-	var type = block.getFieldValue('type');  
-	
-	var code = 'distance_sensor_'+dir+'_'+type+'!'+dist+'\n'; 
-	
-	return code;
-	
-};
-
-Blockly.JavaScript['light_sensor'] = function(block) {
-	var dir = block.getFieldValue('dir');
-	var light = block.getFieldValue('light');
-	
-	var code = 'light_sensor_'+dir+'!'+light+'\n';
-    
-	return code;
-};
-
-Blockly.JavaScript['sound_sensor'] = function(block) {
-	var dir = block.getFieldValue('dir');
-	var sound = block.getFieldValue('sound');
-	
-	var code = 'sound_sensor_'+dir+'!'+sound+'\n';
-	
-	return code;
-};
-
-
 Blockly.JavaScript['led'] = function(block) {
 	var dropdown_side = block.getFieldValue('side');
 	var dropdown_color = block.getFieldValue('color');
@@ -84,13 +46,13 @@ Blockly.JavaScript['string'] = function(block) {
 Blockly.JavaScript['number'] = function(block) {
 	var number_numberin = block.getFieldValue('numberIn');
 	var code = number_numberin;
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['boolean'] = function(block) {
 	var dropdown_booleandrop = block.getFieldValue('booleanDrop');
-	var code = " "+dropdown_booleandrop+" ";
-	return code;
+	var code = "__"+dropdown_booleandrop+"__";
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['arithmeticop'] = function(block) {
@@ -98,7 +60,7 @@ Blockly.JavaScript['arithmeticop'] = function(block) {
 	var dropdown_operation = block.getFieldValue('operation');
 	var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
 	var code = "("+value_val1+")"+dropdown_operation+"("+value_val2+")";
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['compare'] = function(block) {
@@ -106,12 +68,12 @@ Blockly.JavaScript['compare'] = function(block) {
 	var dropdown_comparetype = block.getFieldValue('compareType');
 	var value_val2 = Blockly.JavaScript.valueToCode(block, 'val2', Blockly.JavaScript.ORDER_ATOMIC);
 	var code = '('+value_val1+')'+dropdown_comparetype+'('+value_val2+')';
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 Blockly.JavaScript['if_statement'] = function(block) {
 	var value_trigger = Blockly.JavaScript.valueToCode(block, 'trigger', Blockly.JavaScript.ORDER_ATOMIC);
 	var statements_code = Blockly.JavaScript.statementToCode(block, 'code');
-	var code = 'ifStatement_'+valueTringger+"\n"+statements_code+'|\n'; // | is the char signifying a decrement in tab counter
+	var code = 'ifState __'+value_trigger+"__:State\n"+statements_code+'\n|\n'; // | is the char signifying a decrement in tab counter
 	return code;
 };
 
@@ -121,7 +83,7 @@ Blockly.JavaScript['if_statement'] = function(block) {
 
 
 Blockly.JavaScript['touch_sensor'] = function(block) {
-	var code = ' ts.value() ';
+	var code = '__ts.value()__';
 	return code;
 };
 
@@ -135,63 +97,62 @@ Blockly.JavaScript['combo_logic'] = function(block) {
 
 Blockly.JavaScript['not_logic'] = function(block) {
 	var value_name = Blockly.JavaScript.valueToCode(block, 'NAME', Blockly.JavaScript.ORDER_ATOMIC);
-	var code = ' not ';
+	var code = '__not'+value_name+'__';
 	return code;
 };
 
-Blockly.JavaScript['infrared_in'] = function(block) {
+Blockly.JavaScript['infrared_sensor'] = function(block) {
 	var dropdown_unit = block.getFieldValue('unit');
 	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
+	var code = '__infrared_'+dropdown_unit+"__";
 	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
-};
-
-Blockly.JavaScript['infrared_cm'] = function(block) {
-	var dropdown_unit = block.getFieldValue('unit');
-	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
-	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
-};
-
-Blockly.JavaScript['infrared_mm'] = function(block) {
-	var dropdown_unit = block.getFieldValue('unit');
-	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
-	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 
 Blockly.JavaScript['color_colorbool'] = function(block) {
 	var dropdown_color = block.getFieldValue('COLOR');
 	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
+	var code = '__color_bool_'+dropdown_color+"__";
 	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['color_colorint'] = function(block) {
 	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
+	var code = '__color_int_'+dropdown_color+"__";
 	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['color_ambient'] = function(block) {
 	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
+	var code = '__color_ambient_'+dropdown_color+"__";
 	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['color_reflected'] = function(block) {
 	// TODO: Assemble JavaScript into code variable.
-	var code = '...';
+	var code = '__color_reflected_'+dropdown_color+"__";
 	// TODO: Change ORDER_NONE to the correct strength.
-	return code;
+	return [code, Blockly.JavaScript.ORDER_NONE];
 };
+
+Blockly.JavaScript['ultrasonic_sensor'] = function(block) {
+	var dropdown_unit = block.getFieldValue('unit');
+	var code = '__ultrasonic_'+dropdown_unit+"__";
+	return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+Blockly.JavaScript['gyro_sensor'] = function(block) {
+  // TODO: Assemble JavaScript into code variable.
+  var code = '__gy.value()__';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+
 // color color
 // bool is color what is defined
 // int output of color number

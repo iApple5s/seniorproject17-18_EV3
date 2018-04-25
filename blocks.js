@@ -256,11 +256,11 @@ Blockly.Blocks['not_logic'] = {
     }
 };
 
-Blockly.Blocks['infrared_in'] = {
+Blockly.Blocks['infrared_sensor'] = {
 	init: function() {
 		this.appendDummyInput()
-        .appendField("Infrared Distance: inches")
-        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
+        .appendField("Infrared Distance in:")
+        .appendField(new Blockly.FieldDropdown([["cm","CM"], ["in","IN"], ["mm","MM"]]), "unit");
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("Gets current infrared distance in inches, max distance of ~27 inches");
@@ -268,29 +268,32 @@ Blockly.Blocks['infrared_in'] = {
     }
 };
 
-Blockly.Blocks['infrared_cm'] = {
+Blockly.Blocks['ultrasonic_sensor'] = {
 	init: function() {
 		this.appendDummyInput()
-        .appendField("Infrared Distance: centimeters")
-        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
+        .appendField("Ultrasonic Sensor distance in:")
+        .appendField(new Blockly.FieldDropdown([["cm","CM"], ["mm","MM"], ["in","IN"]]), "unit");
         this.setOutput(true, "Number");
         this.setColour(230);
-        this.setTooltip("Gets current infrared distance in centimeters, max distance of ~70cm");
+        this.setTooltip("");
         this.setHelpUrl("");
     }
 };
 
-Blockly.Blocks['infrared_mm'] = {
+
+
+Blockly.Blocks['gyro_sensor'] = {
 	init: function() {
 		this.appendDummyInput()
-        .appendField("Infrared Distance: millimeters")
-        //.appendField(new Blockly.FieldDropdown([["cm","CENTIMETER"], ["in","INCH"], ["mm","MILLIMETER"]]), "unit");
-        this.setOutput(true, "Number");
+        .appendField("Gyro sensor angle");
+        this.setOutput(true, null);
         this.setColour(230);
-        this.setTooltip("Gets current infrared distance in millimeters, max distance or ~700mm");
+        this.setTooltip("Difference from current to start angle, in degrees");
         this.setHelpUrl("");
     }
 };
+
+
 
 Blockly.Blocks['color_colorbool'] = {
 	init: function() {

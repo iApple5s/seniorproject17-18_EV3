@@ -47,7 +47,8 @@ import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebHistory.Entry;
 import netscape.javascript.JSObject;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBuilder;
+import javafx.scene.text.*;
+import java.util.Arrays;
 
 
 
@@ -207,83 +208,7 @@ public class LegoCodeGenPython extends Application {
         
         btnSaveSettings = new Button ("Save Settings");
         btnLoadSettings = new Button ("Load Settings");
-        /*
-        //This button saves the current state of necessary the JavaFX UI objects and saves them to a file
         
-        btnSaveSettings.setOnAction((ActionEvent t) -> {
-        		//save the current state of the UI elements
-        		String touch_sen, light_sen, sound_sen, color_sen, ultrasonic_sen, leftMotor, rightMotor, wheelDiam, trackWid, motorPower;   
-        		touch_sen = cboTouchSensor.getValue().toString();
-        		light_sen = cboLightSensor.getValue().toString();
-        		sound_sen = cboSoundSensor.getValue().toString();
-                color_sen = cboColorSensor.getValue().toString();
-        		ultrasonic_sen = cboUltrasonicSensor.getValue().toString();
-        		infrared_sen = cboInfraredSensor.getValue().toString();
-        		leftMotor = cboLeftMotor.getValue().toString();
-        		rightMotor = cboRightMotor.getValue().toString();
-        		motorPower = cboMotorPower.getValue().toString();
-        		wheelDiam = txtWheelDiameter.getText();
-        		trackWid = txtTrackWidth.getText();   
-        		
-        		//create the String to be saved to disk sent to the function SaveFile()
-        		final String save_Settings = trackWid+","+wheelDiam+","+leftMotor+","+rightMotor+","+touch_sen+","+ultrasonic_sen+","+sound_sen+","+light_sen+","+color_sen+","+motorPower+"\n";
-        		Text textSong = TextBuilder.create()
-                .text(save_Settings)
-                .build(); 
-                
-                FileChooser fileChooser = new FileChooser();
-                //Set extension filter
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SET files (*.set)", "*.set");
-                fileChooser.getExtensionFilters().add(extFilter);
-                //Set Class Directory as default
-                fileChooser.setInitialDirectory(new File(LegoCodeGenPython.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-                //Show save file dialog
-                File file = fileChooser.showSaveDialog(stage);
-                
-                if(file != null){
-                	SaveFile(save_Settings, file);
-                }
-        });
-        //This button loads the settings stored in a file to the UI objects
-        
-        btnLoadSettings.setOnAction((ActionEvent t) -> {
-                FileChooser fileChooser = new FileChooser();
-                
-                //Set extension filter
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SET files (*.set)", "*.set");
-                fileChooser.getExtensionFilters().add(extFilter);
-                
-                //Set Class Directory as default
-                fileChooser.setInitialDirectory(new File(LegoCodeGenPython.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-                
-                //Show save file dialog
-                File file = fileChooser.showOpenDialog(stage);
-                if(file != null){
-                    String setting_string = readFile(file);
-                    try {
-                        //if the file is formatted correctly this will work
-                        String[] splitSettingString = setting_string.split(",");
-                        txtTrackWidth.setText(splitSettingString[0]);
-                        txtWheelDiameter.setText(splitSettingString[1]);
-                        cboLeftMotor.setValue(splitSettingString[2]);     
-                        cboRightMotor.setValue(splitSettingString[3]);     
-                        cboTouchSensor.setValue(splitSettingString[4]);     
-                        cboUltrasonicSensor.setValue(splitSettingString[5]); 
-                        cboInfraredSensor.setValue(splitSettingString[6]);
-                        cboSoundSensor.setValue(splitSettingString[7]);     
-                        cboLightSensor.setValue(splitSettingString[8]); 
-                        cboColorSensor.setValue(splitSettingString[9]);    
-                        cboMotorPower.setValue(splitSettingString[10]);
-                    }
-                    catch (Exception e) {
-                        //something didnt work
-                        JOptionPane.showMessageDialog (null, "Something is wrong with the selected settings file");
-                    } 
-                }
-                
-        });   
-        
-        */
         
         //This is where we define the gridPane() and UI elements to have the desired constraints 
         BorderPane background = new BorderPane();
@@ -473,11 +398,13 @@ public class LegoCodeGenPython extends Application {
         result[0] = StartLine;
         // Adds #!/usr/bin/env python3 to start of file, needed in all files for executing in linux
         // basic import statements
+        String ImportLine0 = "import ev3dev.ev3 as ev3";
         String ImportLine1 = "from ev3dev.ev3 import *";
         String ImportLine2 = "from time import sleep";
-        result[1] = ImportLine1;
-        result[2] = ImportLine2;
-        r = r + 3;
+        result[1] = ImportLine0;
+        result[2] = ImportLine1;
+        result[3] = ImportLine2;
+        r = r + 4;
         // Motor and other variable declaration
         //Primary and Auxilary motors
         
@@ -531,391 +458,229 @@ public class LegoCodeGenPython extends Application {
         
         int tCount = 0; //used for generating tabs when indentation is needed
         
-        for (int i = 0; i < splitString.length; i ++)
+        for (int i = 0; i < splitString.length; i++)
         { 
         	System.out.println(splitString[i]);
-        	
+        	String[] stringResult = new String[1000];
+        	System.out.println("tCount: "+tCount);
         	String tabs = String.join("", Collections.nCopies(tCount,"\t"));
+        	stringResult[0] = tabs;
+        	int resCount = 1; // first index taken up by tabs, counter for StringRes
         	if (splitString[i]=="NULL" || splitString[i]=="" || splitString[i]==" "|| splitString[i]=="EOF")
         	{
                 break;
             }
             else
             {
-            	if (splitString[i].contains("move")){
-            		String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double distance = 0.0;
-                	String direction = null;
-                	try { // Check if there is a valid number entered in a block
-                		distance = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
-                		return false;
-                	}
-                	// Unit conversion tree
-                	if(tempStrNum[0].contains("in")){
-                		distance = Double.parseDouble(trimTempStrNum);
-                	} else if(tempStrNum[0].contains("ft")){
-                		distance = Double.parseDouble(trimTempStrNum) * 12;
-                	} 
-                	
-                	// Forwards or backwards
-                	if (tempStrNum[0].contains("backward")){
-                		direction = "-";
-                	} else { // assumes that the movement is forward
-                		direction = "+";
-                	}
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String PythonCode = tabs +"motorL.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')";
-                	result[r] = PythonCode; r++;
-                	PythonCode = tabs+"motorR.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')";
-                	result[r] = PythonCode; r++;
-                	PythonCode = tabs+"motorR.wait_while('running')";
-                	result[r] = PythonCode; r++;
-                }
-                else if (splitString[i].contains("Sound.speak")){
-                	String[] tempStr = splitString[i].split("_");
-                	
-                	String PythonCode = tabs + "Sound.speak(\""+tempStr[1]+"\")";
-
-                	result[r] = PythonCode; r++;
-                }
-                
-                else if (splitString[i].contains("turn")){
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double tempDegrees = 0.0;
-                	try {
-                		tempDegrees = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the turn block");
-                		return false;
-                	}     
-                	double distance = (tempDegrees/360D) * turnCircum;
-                	long revDeg = revolutionsDeg(wheelCircum,distance)/2; // dividing by 2 to use both motors instead of one. may need recalculation
-                	String tempStrCalculated = Long.toString(revDeg); 
-                	String PythonCode = null;
-                	if (splitString[i].contains("left")){
-                		PythonCode="RotateMotor(OUT_"+leftMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
-                		PythonCode="RotateMotor(OUT_"+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	} else { // right turn
-                		PythonCode="RotateMotor(OUT_"+leftMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                		PythonCode="RotateMotor(OUT_"+rightMotor+", -"+motorPowerInt+", "+tempStrCalculated+");\n";
-                	}
-                	result[r] = PythonCode;
-                	r++;
-                }
-                
-                // begin sensor reading
-                
-                else if(splitString[i].contains("")){  // Infrared sensor
-                	
-                } 
-                
-                else if(splitString[i].contains("")){  // Color sensor
-                	
-                } 
-                
-                else if(splitString[i].contains("")){  // Ultrasonic sensor
-                	
-                } 
-                
-                else if(splitString[i].contains("")){  // Touch sensor
-                	
-                } 
-                
-                // End sensor reading
-                
-                // Begin logical operators (not if statements)
-                
-                else if(splitString[i].contains("")){ // not equal/equivalence/greater-less than
-                	
-                } 
-                
-                else if(splitString[i].contains("")){ // and/or
-                	
-                } 
-                
-                else if(splitString[i].contains("")){ // NOT logic block
-                	
-                } 
-                
-                // End logical operators
-                
-                /*
-                else if (splitString[i].contains("turn_left"))
-                {    
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	double tempDegrees = 0.0;   
-                	try {
-                		tempDegrees = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the turn block");
-                		return false;
-                	}             
-                	double distance = (tempDegrees/360D) * turnCircum;
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg); 
-                	String PythonCode="RotateMotor(OUT_"+leftMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }
-                else if (splitString[i].contains("turn_right"))
-                {    
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();   
-                	double tempDegrees = 0.0;
-                	try {
-                		tempDegrees = Double.parseDouble(trimTempStrNum);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the turn block");
-                		return false;
-                	}              
-                	double distance = (tempDegrees/360D) * turnCircum;
-                	long revDeg = revolutionsDeg(wheelCircum,distance);
-                	String tempStrCalculated = Long.toString(revDeg); 
-                	String PythonCode="RotateMotor(OUT_"+rightMotor+", "+motorPowerInt+", "+tempStrCalculated+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }
-                */
-                // constant rotation until condition blocks.
-                else if (splitString[i].contains("touch_sensor_fwd") || splitString[i].contains("distance_sensor_fwd")
-                	|| splitString[i].contains("light_sensor_fwd") || splitString[i].contains("sound_sensor_fwd")
-                	|| splitString[i].contains("touch_sensor_bwd") || splitString[i].contains("distance_sensor_bwd")
-                	|| splitString[i].contains("light_sensor_bwd") || splitString[i].contains("sound_sensor_bwd")){
-                	
-                	String direction = null;
-                	if (splitString[i].contains("fwd")){
-                		direction = "+";
-                	} else {
-                		direction = "-";
-                	}
-                	if (splitString[i].contains("touch_sensor")){
-						if (touch_sen.equals("Not used")) {
-							JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
-							return false;                     
-						}
-                		
+            	String[] splitLine = splitString[i].split("__");
+            	
+            	
+            	
+            	for(int j = 0; j < splitLine.length; j++)
+            	{
+            		//System.out.println("Reading: "+splitLine[j]);
+            		//System.out.println("if truth value: "+splitLine[j].contains("ifState"));
+            		//System.out.println("if truth value: "+(splitLine[j].contains("ifState") || splitLine[j].contains(":State")));
+            		//System.out.println("if truth value: "+(splitLine[j].contains("ifState") | splitLine[j].contains(":State")));
+            		
+            		if(splitLine[j].contains("ifState") || splitLine[j].contains(":State")){
+						System.out.println("IF-statement");
 						
-                	}
-                }
-                /*
-                else if (splitString[i].contains("touch_sensor_fwd"))
-                {    
-                	if (touch_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
-                		return false;                     
-                	}
-                	String PythonCode="SetSensorTouch(IN_"+touch_sen+");\nOnFwd(OUT_"+leftMotor+rightMotor+", "+motorPowerInt+");\nuntil (Sensor(IN_"+touch_sen+") == 1);\nOff(OUT_"+leftMotor+rightMotor+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }
-                else if (splitString[i].contains("distance_sensor_fwd_in"))
-                {   
-                	if (distance_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the ultra sonic sensor a valid input number");
-                		return false;                     
-                	}                
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	long tempDblStrNum = 0;
-                	try {
-                		tempDblStrNum = Math.round(Double.parseDouble(trimTempStrNum) * 2.54);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the ultra sonic sensor block");
-                		return false;
-                	}      
-                	String tempStrCalculated = Long.toString(tempDblStrNum);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorLowspeed(IN_"+distance_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+","+motorPowerInt+");\nwhile(SensorUS(IN_"+distance_sen+")>"+tempStrCalculated+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	result[r] = PythonCode;
-                	r++;
-                } 
-                else if (splitString[i].contains("distance_sensor_fwd_ft"))
-                {   
-                	if (distance_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the ultra sonic sensor a valid input number");
-                		return false;                     
-                	}                
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	long tempDblStrNum = 0;
-                	try {
-                		tempDblStrNum = Math.round(Double.parseDouble(trimTempStrNum) * 2.54 * 12); //convert to feet and cm
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the ultra sonic sensor block");
-                		return false;
-                	}      
-                	String tempStrCalculated = Long.toString(tempDblStrNum);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorLowspeed(IN_"+distance_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+","+motorPowerInt+");\nwhile(SensorUS(IN_"+distance_sen+")>"+tempStrCalculated+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	result[r] = PythonCode;
-                	r++;
-                }                 
-                else if (splitString[i].contains("light_sensor_fwd"))
-                {   
-                	if (light_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the light sensor a valid input number");
-                		return false;                     
-                	}                
-                	int threshold = 0;
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStr = tempStrNum[1].trim();
-                	String PythonCode="";
-                	if (trimTempStr.equals("light")) { 
-                		threshold = 50; 
-                		PythonCode="SetSensorLight(IN_"+light_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+","+motorPowerInt+");\nwhile(Sensor(IN_"+light_sen+") < "+threshold+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	}
-                	else { 
-                		threshold = 50;
-                		PythonCode="SetSensorLight(IN_"+light_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+","+motorPowerInt+");\nwhile(Sensor(IN_"+light_sen+") > "+threshold+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n"; 
-                	}
-                	//take split string and put it as NXC code here, add it to array as a string
-                	
-                	result[r] = PythonCode;
-                	r++;
-                }  
-                /*
-                else if(splitString[i].contains("color_is_seen"))
-                {
-                    if(color_sen.equals("Not used")){
-                        JOptionPane.showMessageDialog(null, "Please give the color sensor a valid input number");
-                        return false;
-                    }
-                    int threshold = 0;
-                    String[] tempStrNum = splitString[i].split("!");
-                    String trimTempStr = temStrNum[1].trim();
-                    String PythonCode="";
-                    PythonCode=""
-                }   */
-                /*
-                else if (splitString[i].contains("sound_sensor_fwd"))
-                {   
-                	if (sound_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the sound sensor a valid input number");
-                		return false;                     
-                	}                
-                	int threshold = 0;
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStr = tempStrNum[1].trim();
-                	if (trimTempStr.equals("quiet")) { threshold = 30; }
-                	else if (trimTempStr.equals("medium")) { threshold = 60; }
-                	else { threshold = 90; }
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorSound(IN_"+sound_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+","+motorPowerInt+");\nif(Sensor(IN_"+sound_sen+") > "+threshold+"){\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}}\n";
-                	result[r] = PythonCode;
-                	r++;
-                } 
-                else if (splitString[i].contains("touch_sensor_bwd"))
-                {    
-                	if (touch_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
-                		return false;                     
-                	}
-                	String PythonCode="SetSensorTouch(IN_"+touch_sen+");\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nuntil (Sensor(IN_"+touch_sen+") == 1);\nOff(OUT_"+leftMotor+rightMotor+");\n";
-                	result[r] = PythonCode;
-                	r++;
-                }
-                else if (splitString[i].contains("distance_sensor_bwd_in"))
-                {   
-                	if (distance_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the ultra sonic sensor a valid input number");
-                		return false;                     
-                	}                
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	long tempDblStrNum = 0;
-                	try {
-                		tempDblStrNum = Math.round(Double.parseDouble(trimTempStrNum) * 2.54);
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the ultra sonic sensor block");
-                		return false;
-                	} 
-                	String tempStrCalculated = Long.toString(tempDblStrNum);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorLowspeed(IN_"+distance_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nwhile(SensorUS(IN_"+distance_sen+")>"+tempStrCalculated+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	result[r] = PythonCode;
-                	r++;
-                } 
-                else if (splitString[i].contains("distance_sensor_bwd_ft"))
-                {   
-                	if (distance_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the ultra sonic sensor a valid input number");
-                		return false;                     
-                	}                
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStrNum = tempStrNum[1].trim();
-                	long tempDblStrNum = 0;
-                	try {
-                		tempDblStrNum = Math.round(Double.parseDouble(trimTempStrNum) * 2.54 * 12);//convert to feet and cm
-                	} catch (Exception e){
-                		JOptionPane.showMessageDialog (null, "Please enter a valid number for the ultra sonic sensor block");
-                		return false;
-                	} 
-                	String tempStrCalculated = Long.toString(tempDblStrNum);
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorLowspeed(IN_"+distance_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nwhile(SensorUS(IN_"+distance_sen+")>"+tempStrCalculated+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	result[r] = PythonCode;
-                	r++;
-                } 
-                else if (splitString[i].contains("light_sensor_bwd"))
-                {   
-                	if (light_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the light sensor a valid input number");
-                		return false;                     
-                	}                
-                	int threshold = 0;
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStr = tempStrNum[1].trim();
-                	String PythonCode="";
-                	if (trimTempStr.equals("light")) { 
-                		threshold = 50; 
-                		PythonCode="SetSensorLight(IN_"+light_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nwhile(Sensor(IN_"+light_sen+") < "+threshold+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n";
-                	}
-                	else { 
-                		threshold = 50;
-                		PythonCode="SetSensorLight(IN_"+light_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nwhile(Sensor(IN_"+light_sen+") > "+threshold+");\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}\n"; 
-                	}
-                	//take split string and put it as NXC code here, add it to array as a string
-                	
-                	result[r] = PythonCode;
-                	r++;
-                }      
-                else if (splitString[i].contains("sound_sensor_bwd"))
-                {   
-                	if (sound_sen.equals("Not used")) {
-                		JOptionPane.showMessageDialog (null, "Please give the sound sensor a valid input number");
-                		return false;                     
-                	}                
-                	int threshold = 0;
-                	String[] tempStrNum = splitString[i].split("!");
-                	String trimTempStr = tempStrNum[1].trim();
-                	if (trimTempStr.equals("quiet")) { threshold = 30; }
-                	else if (trimTempStr.equals("medium")) { threshold = 60; }
-                	else { threshold = 90; }
-                	//take split string and put it as NXC code here, add it to array as a string
-                	String PythonCode="SetSensorSound(IN_"+sound_sen+");\nwhile(true){\nOnFwd(OUT_"+leftMotor+rightMotor+",-"+motorPowerInt+");\nif(Sensor(IN_"+sound_sen+") > "+threshold+"){\nOff(OUT_"+leftMotor+rightMotor+");\nbreak;}}\n";
-                	result[r] = PythonCode;
-                	r++;
-                }   
-                */
-                
-                
-                else if(splitString[i].contains("ifStatement_")){
-                	System.out.println(splitString[i]);
-                	String[] tempSplit =  splitString[i].split("_");
-                	
-                	String PythonCode = "if "+tempSplit[1]+":";
-                	tCount++;
-                }
-                else if(splitString[i].contains("|")){
-                	tCount--;	
-                }
-                else{}  
-            }
+						if(splitLine[j].contains("ifState")){
+							System.out.println("Increment tCount");
+							stringResult[resCount] = "if ";
+							tCount++;
+						} else{
+							stringResult[resCount] = ":";
+						}
+						resCount++; 
+						
+					}
+					else if(splitLine[j].contains("|")){
+						System.out.println("Decrement tCount");
+						tCount--;	
+					}
+            		
+					else if (splitLine[j].contains("move")){
+						
+						String[] tempStrNum = splitLine[j].split("!");
+						String trimTempStrNum = tempStrNum[1].trim();
+						double distance = 0.0;
+						String direction = null;
+						try { // Check if there is a valid number entered in a block
+							distance = Double.parseDouble(trimTempStrNum);
+						} catch (Exception e){
+							JOptionPane.showMessageDialog (null, "Please enter a valid number for the move block");
+							return false;
+						}
+						// Unit conversion tree
+						if(tempStrNum[0].contains("in")){
+							distance = Double.parseDouble(trimTempStrNum);
+						} else if(tempStrNum[0].contains("ft")){
+							distance = Double.parseDouble(trimTempStrNum) * 12;
+						} 
+						
+						// Forwards or backwards
+						if (tempStrNum[0].contains("backward")){
+							direction = "-";
+						} else { // assumes that the movement is forward
+							direction = "+";
+						}
+						long revDeg = revolutionsDeg(wheelCircum,distance);
+						String PythonCode = "motorL.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')\n";
+						stringResult[resCount] = PythonCode; resCount++;
+						PythonCode = tabs+"motorR.run_to_rel_pos(position_sp="+revDeg+", speed_sp="+direction+motorPowerInt+", stop_action='hold')\n";
+						stringResult[resCount] = PythonCode; resCount++;
+						PythonCode = tabs+"motorR.wait_while('running')\n";
+						stringResult[resCount] = PythonCode; resCount++;
+					}
+					
+					
+					else if (splitLine[j].contains("Sound.speak")){
+						String[] tempStr = splitLine[j].split("_");
+						
+						String PythonCode = "Sound.speak(\""+tempStr[1]+"\")\n";
+	
+						stringResult[resCount] = PythonCode; resCount++;
+					}
+					
+					else if (splitLine[j].contains("turn")){
+						String[] tempStrNum = splitLine[j].split("!");
+						String trimTempStrNum = tempStrNum[1].trim();
+						double tempDegrees = 0.0;
+						try {
+							tempDegrees = Double.parseDouble(trimTempStrNum);
+						} catch (Exception e){
+							JOptionPane.showMessageDialog (null, "Please enter a valid number for the turn block");
+							return false;
+						}     
+						double distance = (tempDegrees/360D) * turnCircum;
+						long revDeg = revolutionsDeg(wheelCircum,distance)/2; // dividing by 2 to use both motors instead of one. may need recalculation
+						String tempStrCalculated = Long.toString(revDeg); 
+						String PythonCode = null;
+						if (splitLine[j].contains("left")){
+							
+							PythonCode = "motorL.run_to_rel_pos(position_sp=-"+revDeg+", speed_sp=+"+motorPowerInt+", stop_action='hold')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+							PythonCode = tabs+"motorR.run_to_rel_pos(position_sp="+revDeg+", speed_sp=+"+motorPowerInt+", stop_action='hold')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+							PythonCode = tabs+"motorR.wait_while('running')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+							
+						} else { // right turn
+							
+							PythonCode = "motorL.run_to_rel_pos(position_sp="+revDeg+", speed_sp=+"+motorPowerInt+", stop_action='hold')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+							PythonCode = tabs+"motorR.run_to_rel_pos(position_sp=-"+revDeg+", speed_sp=+"+motorPowerInt+", stop_action='hold')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+							PythonCode = tabs+"motorR.wait_while('running')\n";
+							stringResult[resCount] = PythonCode; resCount++;
+						}
+						//stringResult[resCount] = PythonCode;
+						//resCount++;
+					}
+					
+					// begin sensor reading
+					
+					else if(splitLine[j].contains("infrared")){  // Infrared sensor
+						String[] tempSplit = splitLine[j].split("_");
+						if (tempSplit[1].contains("cm")){
+							stringResult[resCount] = "(us.value()/10)";
+						} else if (tempSplit[1].contains("mm")){
+							stringResult[resCount] = "(us.value())";
+						} else { // assume that the selected unit is inches
+							stringResult[resCount] = "(us.value()/25.4)";
+						}
+						resCount++;
+					} 
+					
+					else if(splitLine[j].contains("")){  // Color sensor
+						
+					} 
+					
+					else if(splitLine[j].contains("ultrasonic")){  // Ultrasonic sensor
+						String[] tempSplit = splitLine[j].split("_");
+						if (tempSplit[1].contains("cm")){
+							stringResult[resCount] = "(ir.value()*0.6)";
+						} else if (tempSplit[1].contains("mm")){
+							stringResult[resCount] = "(ir.value()*6)";
+						} else { // assume that the selected unit is inches
+							stringResult[resCount] = "(ir.value()*0.6/25.4)";
+						}
+						
+						resCount++;
+					} 
+					
+					else if(splitLine[j].contains("ts.value")){  // Touch sensor
+						stringResult[resCount] = splitLine[j];
+						resCount++;
+					} 
+					
+					else if(splitLine[j].contains("gy.value")){  // Gyro Sensor
+						stringResult[resCount] = splitLine[j];
+						resCount++;
+					}
+					
+					// End sensor reading
+					
+					// Begin logical operators (not if statements)
+					
+					else if(splitLine[j].contains("==") || splitLine[j].contains("!=") || splitLine[j].contains("<") || splitLine[j].contains(">") || splitLine[j].contains("<=") || splitLine[j].contains(">=")){ // not equal/equivalence/greater-less than
+						stringResult[resCount] = splitLine[j];
+						resCount++;
+					} 
+					
+					else if(splitLine[j].contains("or") || splitLine[j].contains("and") || splitLine[j].contains("not")){ // and/or/not
+						stringResult[resCount] = splitLine[j];
+						resCount++;
+					} 
+
+					
+					// End logical operators
+					
+					
+					// constant rotation until condition blocks.
+					else if (splitLine[j].contains("touch_sensor_fwd") || splitLine[j].contains("distance_sensor_fwd")
+						|| splitLine[j].contains("light_sensor_fwd") || splitLine[j].contains("sound_sensor_fwd")
+						|| splitLine[j].contains("touch_sensor_bwd") || splitLine[j].contains("distance_sensor_bwd")
+						|| splitLine[j].contains("light_sensor_bwd") || splitLine[j].contains("sound_sensor_bwd")){
+						
+						String direction = null;
+						if (splitLine[j].contains("fwd")){
+							direction = "+";
+						} else {
+							direction = "-";
+						}
+						if (splitLine[j].contains("touch_sensor")){
+							if (touch_sen.equals("Not used")) {
+								JOptionPane.showMessageDialog (null, "Please give the touch sensor a valid input number");
+								return false;                     
+							}
+							
+							
+						}
+					}
+					
+					
+					
+					
+					else{
+						stringResult[resCount] = splitLine[j];
+						resCount++; 
+						
+					}  
+				}
+				
+			}
+			StringBuilder sb = new StringBuilder();
+			for(int q = 0; q < resCount; q++){
+				if(stringResult[q] != null){
+					sb.append(stringResult[q]);
+				}
+			}
+			result[r] = sb.toString();
+			r++;
+			
         }
         try
         {
