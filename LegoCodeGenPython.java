@@ -660,17 +660,13 @@ public class LegoCodeGenPython extends Application {
 							
 						}
 					}
-					
-					
-					
-					
+						
 					else{
 						stringResult[resCount] = splitLine[j];
 						resCount++; 
 						
 					}  
 				}
-				
 			}
 			StringBuilder sb = new StringBuilder();
 			for(int q = 0; q < resCount; q++){

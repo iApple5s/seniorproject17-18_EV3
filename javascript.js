@@ -77,11 +77,6 @@ Blockly.JavaScript['if_statement'] = function(block) {
 	return code;
 };
 
-
-
-
-
-
 Blockly.JavaScript['touch_sensor'] = function(block) {
 	var code = '__ts.value()__';
 	return code;

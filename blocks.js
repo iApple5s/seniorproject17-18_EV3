@@ -30,18 +30,14 @@ Blockly.Blocks['move'] = {
     }
 };
 
-// "drive until" blocks
 Blockly.Blocks['touch_sensor'] = {
-	init: function() {
-		this.appendDummyInput()
-        .appendField("Drive ")
-        .appendField(new Blockly.FieldDropdown([["forward","fwd"], ["backward","bwd"], ]), "dir")
-        .appendField(" until it touches something")
-        this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(135);
-        this.setTooltip('This will drive the robot forward or backward until it touches something');
+    init: function() {
+        this.appendDummyInput()
+        .appendField("Touch Sensor is")
+        .appendField(new Blockly.FieldDropdown([["Not Pressed","NotPressed"], ["Is Pressed","IsPressed"]]), "NAME");
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("Outputs if touch sensor is pressed or not");
         this.setHelpUrl('');
     }
 };
@@ -96,7 +92,7 @@ Blockly.Blocks['sound_sensor'] = {
     }
 };
 
-// experimental, single trick blocks
+//Text to speech block definition
 Blockly.Blocks['speech'] = {
 	init: function() {
 		this.appendDummyInput()
@@ -126,7 +122,6 @@ Blockly.Blocks['led'] = {
 };
 
 // Variables, data declarations, and data structures
-
 Blockly.Blocks['global_declare'] = {
 	init: function() {
 		this.appendValueInput("NAME")
@@ -157,7 +152,7 @@ Blockly.Blocks['number'] = {
         .appendField(new Blockly.FieldNumber(0), "numberIn");
         this.setOutput(true, null);
         this.setColour(230);
-        this.setTooltip("");
+        this.setTooltip("Number input");
         this.setHelpUrl("");
     }
 };
@@ -187,6 +182,7 @@ Blockly.Blocks['arithmeticop'] = {
         this.setHelpUrl("");
     }
 };
+
 Blockly.Blocks['compare'] = {
 	init: function() {
 		this.appendValueInput("val1")
@@ -202,6 +198,7 @@ Blockly.Blocks['compare'] = {
         this.setHelpUrl("");
     }
 };
+
 Blockly.Blocks['if_statement'] = {
 	init: function() {
 		this.appendValueInput("trigger")
@@ -213,17 +210,6 @@ Blockly.Blocks['if_statement'] = {
         this.setNextStatement(true, null);
         this.setColour(230);
         this.setTooltip("If statement, code runs if statement is true");
-        this.setHelpUrl("");
-    }
-};
-
-Blockly.Blocks['touch_sensor'] = {
-	init: function() {
-		this.appendDummyInput()
-        .appendField("Touch Sensor");
-        this.setOutput(true, "Boolean");
-        this.setColour(230);
-        this.setTooltip("Returns true when pressed, false when not.");
         this.setHelpUrl("");
     }
 };
@@ -280,8 +266,6 @@ Blockly.Blocks['ultrasonic_sensor'] = {
     }
 };
 
-
-
 Blockly.Blocks['gyro_sensor'] = {
 	init: function() {
 		this.appendDummyInput()
@@ -292,8 +276,6 @@ Blockly.Blocks['gyro_sensor'] = {
         this.setHelpUrl("");
     }
 };
-
-
 
 Blockly.Blocks['color_colorbool'] = {
 	init: function() {
@@ -340,4 +322,3 @@ Blockly.Blocks['color_reflected'] = {
         this.setHelpUrl("");
     }
 };
-//If conditions 
